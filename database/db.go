@@ -1,10 +1,12 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 
-	_ "github.com/lib/pq"
+	"github.com/harbor-xyz/coding-project/model"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const (
@@ -12,27 +14,21 @@ const (
 	PORT = 5432
 )
 
-type db struct {
-	conn *sql.DB
-}
-
-var DB db
+var db *gorm.DB
 
 func Init(username, password, database string) {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		HOST, PORT, username, password, database)
 
-	conn, err := sql.Open("postgres", dsn)
+	var err error
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 
-	err = conn.Ping()
-	if err != nil {
-		panic(err)
-	}
+	db.AutoMigrate(&model.User{})
+}
 
-	DB = db{
-		conn: conn,
-	}
+func Get() *gorm.DB {
+	return db
 }
