@@ -26,6 +26,17 @@ func (availability UserAvailability) Set(ctx context.Context, input model.UserAv
 	return input, nil
 }
 
+func (availability UserAvailability) Get(ctx context.Context, userID int) (model.UserAvailability, error) {
+	ua := model.UserAvailability{}
+	err := availability.db.Find(&ua, userID).Error
+	if err != nil {
+		log.Printf("error occurred while getting user availability from DB: %s", err.Error())
+		return model.UserAvailability{}, err
+	}
+
+	return ua, nil
+}
+
 func NewUserAvailability(db *gorm.DB) UserAvailability {
 	return UserAvailability{db: db}
 }
