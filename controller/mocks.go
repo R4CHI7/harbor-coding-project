@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type UserServiceMock struct {
+type MockUserService struct {
 	mock.Mock
 }
 
-func (mock *UserServiceMock) Create(ctx context.Context, input contract.User) (model.User, error) {
+func (mock *MockUserService) Create(ctx context.Context, input contract.User) (model.User, error) {
 	args := mock.Called(ctx, input)
 	return args.Get(0).(model.User), args.Error(1)
 }

@@ -16,11 +16,11 @@ import (
 type UserTestSuite struct {
 	suite.Suite
 	controller  User
-	mockService *UserServiceMock
+	mockService *MockUserService
 }
 
 func (suite *UserTestSuite) SetupTest() {
-	suite.mockService = &UserServiceMock{}
+	suite.mockService = &MockUserService{}
 	suite.controller = User{
 		userService: suite.mockService,
 	}
