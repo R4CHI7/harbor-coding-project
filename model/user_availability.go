@@ -13,8 +13,7 @@ type DayAvailability struct {
 }
 
 type UserAvailability struct {
-	ID                  uint `gorm:"primaryKey"`
-	UserID              uint
+	UserID              uint `gorm:"uniqueIndex"`
 	Availability        datatypes.JSONSlice[DayAvailability]
 	MeetingDurationMins int
 	CreatedAt           time.Time `gorm:"autoCreateTime"`

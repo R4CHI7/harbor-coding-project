@@ -77,7 +77,6 @@ func (suite *UserTestSuite) TestSetAvailabilityHappyFlow() {
 		MeetingDurationMins: 30,
 	}
 	expectedResp := model.UserAvailability{
-		ID:                  1,
 		UserID:              1,
 		Availability:        availability,
 		MeetingDurationMins: 30,
