@@ -26,7 +26,7 @@ func Init(username, password, database string) {
 		panic(err)
 	}
 
-	err = db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.User{}, &model.UserAvailability{})
 	if err != nil {
 		panic(err)
 	}
