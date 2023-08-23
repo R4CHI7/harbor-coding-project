@@ -26,7 +26,10 @@ func Init(username, password, database string) {
 		panic(err)
 	}
 
-	db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.User{})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func Get() *gorm.DB {

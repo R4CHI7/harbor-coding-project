@@ -21,3 +21,7 @@ func (user User) Create(ctx context.Context, input model.User) (model.User, erro
 
 	return input, nil
 }
+
+func NewUser(db *gorm.DB) User {
+	return User{db: db}
+}

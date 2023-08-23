@@ -31,3 +31,9 @@ func (user User) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 }
+
+func NewUser(userService UserService) User {
+	return User{
+		userService: userService,
+	}
+}

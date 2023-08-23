@@ -24,3 +24,7 @@ func (user User) Create(ctx context.Context, input contract.User) (model.User, e
 
 	return insertedObj, nil
 }
+
+func NewUser(userRepository UserRepository) User {
+	return User{userRepository: userRepository}
+}
