@@ -22,7 +22,8 @@ func Init() *chi.Mux {
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 	r.Use(middleware.Logger)
 
-	userController := controller.NewUser(service.NewUser(repository.NewUser(database.Get())))
+	db := database.Get()
+	userController := controller.NewUser(service.NewUser(repository.NewUser(db), repository.NewUserAvailability(db)))
 
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", userController.Create)
