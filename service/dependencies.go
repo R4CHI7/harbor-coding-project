@@ -9,3 +9,7 @@ import (
 type UserRepository interface {
 	Create(context.Context, model.User) (model.User, error)
 }
+
+type UserAvailabilityRepository interface {
+	Set(context.Context, model.UserAvailability) (model.UserAvailability, error)
+}

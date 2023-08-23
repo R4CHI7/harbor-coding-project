@@ -8,25 +8,27 @@ import (
 
 	"github.com/harbor-xyz/coding-project/contract"
 	"github.com/harbor-xyz/coding-project/model"
+
 	"github.com/stretchr/testify/suite"
+	"gorm.io/datatypes"
 )
 
 type UserTestSuite struct {
 	suite.Suite
-	service            User
-	mockUserRepository *MockUserRepository
-	ctx                context.Context
+	service                        User
+	mockUserRepository             *MockUserRepository
+	mockUserAvailabilityRepository *MockUserAvailabilityRepository
+	ctx                            context.Context
 }
 
 func (suite *UserTestSuite) SetupTest() {
 	suite.mockUserRepository = &MockUserRepository{}
-	suite.service = User{
-		userRepository: suite.mockUserRepository,
-	}
+	suite.mockUserAvailabilityRepository = &MockUserAvailabilityRepository{}
+	suite.service = NewUser(suite.mockUserRepository, suite.mockUserAvailabilityRepository)
 	suite.ctx = context.Background()
 }
 
-func (suite *UserTestSuite) TestHappyFlow() {
+func (suite *UserTestSuite) TestCreateHappyFlow() {
 	input := contract.User{
 		Name:  "test",
 		Email: "test@example.xyz",
@@ -53,6 +55,67 @@ func (suite *UserTestSuite) TestCreateShouldReturnErrorIfRepositoryFails() {
 	suite.mockUserRepository.On("Create", suite.ctx, model.User{Name: "test", Email: "test@example.xyz"}).Return(model.User{}, errors.New("some error"))
 
 	resp, err := suite.service.Create(suite.ctx, input)
+	suite.Error(err, "some error")
+	suite.Empty(resp)
+}
+
+func (suite *UserTestSuite) TestSetAvailabilityHappyFlow() {
+	availability := []model.DayAvailability{
+		{
+			Day:       "monday",
+			StartTime: datatypes.NewTime(10, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "tuesday",
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+	}
+	input := contract.UserAvailability{
+		Availability:        availability,
+		MeetingDurationMins: 30,
+	}
+	expectedResp := model.UserAvailability{
+		ID:                  1,
+		UserID:              1,
+		Availability:        availability,
+		MeetingDurationMins: 30,
+		CreatedAt:           time.Now(),
+		UpdatedAt:           time.Now(),
+	}
+	suite.mockUserAvailabilityRepository.On("Set", suite.ctx, model.UserAvailability{
+		UserID: 1, Availability: availability, MeetingDurationMins: 30,
+	}).Return(expectedResp, nil)
+
+	resp, err := suite.service.SetAvailability(suite.ctx, 1, input)
+	suite.Nil(err)
+	suite.Equal(expectedResp, resp)
+}
+
+func (suite *UserTestSuite) TestSetAvailabilityShouldReturnErrorIfRepositoryFails() {
+	availability := []model.DayAvailability{
+		{
+			Day:       "monday",
+			StartTime: datatypes.NewTime(10, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "tuesday",
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+	}
+	input := contract.UserAvailability{
+		Availability:        availability,
+		MeetingDurationMins: 30,
+	}
+
+	suite.mockUserAvailabilityRepository.On("Set", suite.ctx, model.UserAvailability{
+		UserID: 1, Availability: availability, MeetingDurationMins: 30,
+	}).Return(model.UserAvailability{}, errors.New("some error"))
+
+	resp, err := suite.service.SetAvailability(suite.ctx, 1, input)
 	suite.Error(err, "some error")
 	suite.Empty(resp)
 }

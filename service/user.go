@@ -8,7 +8,8 @@ import (
 )
 
 type User struct {
-	userRepository UserRepository
+	userRepository         UserRepository
+	availabilityRepository UserAvailabilityRepository
 }
 
 func (user User) Create(ctx context.Context, input contract.User) (model.User, error) {
@@ -17,14 +18,19 @@ func (user User) Create(ctx context.Context, input contract.User) (model.User, e
 		Email: input.Email,
 	}
 
-	insertedObj, err := user.userRepository.Create(ctx, userObj)
-	if err != nil {
-		return model.User{}, err
-	}
-
-	return insertedObj, nil
+	return user.userRepository.Create(ctx, userObj)
 }
 
-func NewUser(userRepository UserRepository) User {
-	return User{userRepository: userRepository}
+func (user User) SetAvailability(ctx context.Context, userID int, input contract.UserAvailability) (model.UserAvailability, error) {
+	availabilityObj := model.UserAvailability{
+		UserID:              uint(userID),
+		Availability:        input.Availability,
+		MeetingDurationMins: input.MeetingDurationMins,
+	}
+
+	return user.availabilityRepository.Set(ctx, availabilityObj)
+}
+
+func NewUser(userRepository UserRepository, availabilityRepository UserAvailabilityRepository) User {
+	return User{userRepository: userRepository, availabilityRepository: availabilityRepository}
 }
