@@ -9,4 +9,5 @@ import (
 
 type UserService interface {
 	Create(context.Context, contract.User) (model.User, error)
+	SetAvailability(context.Context, int, contract.UserAvailability) (model.UserAvailability, error)
 }

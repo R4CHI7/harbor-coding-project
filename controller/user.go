@@ -32,6 +32,27 @@ func (user User) Create(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+func (user User) SetAvailability(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	input := contract.UserAvailability{}
+	if err := render.Bind(r, &input); err != nil {
+		log.Printf("unable to bind request body: %s", err.Error())
+		render.Render(w, r, contract.ErrorRenderer(err))
+		return
+	}
+
+	userID := ctx.Value(ContextUserIDKey).(int)
+
+	_, err := user.userService.SetAvailability(ctx, userID, input)
+
+	if err != nil {
+		render.Render(w, r, contract.ServerErrorRenderer(err))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func NewUser(userService UserService) User {
 	return User{
 		userService: userService,

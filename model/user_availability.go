@@ -6,7 +6,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type AvailabilityDay struct {
+type DayAvailability struct {
 	Day       string         `json:"day"`
 	StartTime datatypes.Time `json:"start_time"`
 	EndTime   datatypes.Time `json:"end_time"`
@@ -15,7 +15,7 @@ type AvailabilityDay struct {
 type UserAvailability struct {
 	ID                  uint `gorm:"primaryKey"`
 	UserID              uint
-	Availability        datatypes.JSONSlice[AvailabilityDay]
+	Availability        datatypes.JSONSlice[DayAvailability]
 	MeetingDurationMins int
 	CreatedAt           time.Time `gorm:"autoCreateTime"`
 	UpdatedAt           time.Time `gorm:"autoUpdateTime"`
