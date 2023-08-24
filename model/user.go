@@ -12,4 +12,5 @@ type User struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 
 	Availability UserAvailability
+	Slot         Slot
 }
