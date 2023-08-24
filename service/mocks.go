@@ -29,3 +29,12 @@ func (mock *MockUserAvailabilityRepository) Get(ctx context.Context, userID int)
 	args := mock.Called(ctx, userID)
 	return args.Get(0).(model.UserAvailability), args.Error(1)
 }
+
+type MockEventRepository struct {
+	mock.Mock
+}
+
+func (mock *MockEventRepository) Create(ctx context.Context, event model.Event) (model.Event, error) {
+	args := mock.Called(ctx, event)
+	return args.Get(0).(model.Event), args.Error(1)
+}

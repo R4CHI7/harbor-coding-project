@@ -14,3 +14,7 @@ type UserAvailabilityRepository interface {
 	Set(context.Context, model.UserAvailability) (model.UserAvailability, error)
 	Get(context.Context, int) (model.UserAvailability, error)
 }
+
+type EventRepository interface {
+	Create(context.Context, model.Event) (model.Event, error)
+}
