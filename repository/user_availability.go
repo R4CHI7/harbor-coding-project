@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"log"
 
 	"github.com/harbor-xyz/coding-project/model"
@@ -28,10 +29,15 @@ func (availability UserAvailability) Set(ctx context.Context, input model.UserAv
 
 func (availability UserAvailability) Get(ctx context.Context, userID int) (model.UserAvailability, error) {
 	ua := model.UserAvailability{}
-	err := availability.db.Find(&ua, userID).Error
-	if err != nil {
-		log.Printf("error occurred while getting user availability from DB: %s", err.Error())
-		return model.UserAvailability{}, err
+	res := availability.db.Find(&ua, userID)
+	if res.Error != nil {
+		log.Printf("error occurred while getting user availability from DB: %s", res.Error.Error())
+		return model.UserAvailability{}, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		log.Printf("user availability not found for user: %d", userID)
+		return model.UserAvailability{}, sql.ErrNoRows
 	}
 
 	return ua, nil

@@ -32,6 +32,15 @@ func ErrorRenderer(err error) *ErrorResponse {
 	}
 }
 
+func NotFoundErrorRenderer(err error) *ErrorResponse {
+	return &ErrorResponse{
+		Err:        err,
+		StatusCode: 404,
+		StatusText: "not found",
+		Message:    err.Error(),
+	}
+}
+
 func ServerErrorRenderer(err error) *ErrorResponse {
 	return &ErrorResponse{
 		Err:        err,

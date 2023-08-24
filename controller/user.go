@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 
@@ -62,6 +63,10 @@ func (user User) GetAvailability(w http.ResponseWriter, r *http.Request) {
 	availability, err := user.userService.GetAvailability(ctx, userID)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			render.Render(w, r, contract.NotFoundErrorRenderer(err))
+			return
+		}
 		render.Render(w, r, contract.ServerErrorRenderer(err))
 		return
 	}

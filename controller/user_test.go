@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"io"
 	"net/http"
@@ -259,6 +260,27 @@ func (suite *UserTestSuite) TestGetAvailabilityReturnsServerErrorWhenServiceRetu
 
 	suite.Equal(http.StatusInternalServerError, w.Result().StatusCode)
 	suite.Equal(`{"status_text":"internal server error","message":"some error"}
+`, string(body))
+}
+
+func (suite *UserTestSuite) TestGetAvailabilityReturnsNotFoundErrorWhenAvailabilityDoesNotExist() {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	req.Header.Add("Content-Type", "application/json")
+	suite.mockService.On("GetAvailability", req.Context(), 1).Return(contract.UserAvailability{}, sql.ErrNoRows)
+
+	suite.controller.GetAvailability(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusNotFound, w.Result().StatusCode)
+	suite.Equal(`{"status_text":"not found","message":"sql: no rows in result set"}
 `, string(body))
 }
 
