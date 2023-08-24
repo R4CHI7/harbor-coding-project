@@ -24,9 +24,7 @@ type UserTestSuite struct {
 
 func (suite *UserTestSuite) SetupTest() {
 	suite.mockService = &MockUserService{}
-	suite.controller = User{
-		userService: suite.mockService,
-	}
+	suite.controller = NewUser(suite.mockService)
 
 }
 

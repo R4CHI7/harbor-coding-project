@@ -31,3 +31,12 @@ func (mock *MockUserService) GetAvailabilityOverlap(ctx context.Context, user1ID
 	args := mock.Called(ctx, user1ID, user2ID)
 	return args.Get(0).(contract.UserAvailabilityOverlap), args.Error(1)
 }
+
+type MockEventService struct {
+	mock.Mock
+}
+
+func (mock *MockEventService) Create(ctx context.Context, userID int, input contract.Event) (contract.EventResponse, error) {
+	args := mock.Called(ctx, userID, input)
+	return args.Get(0).(contract.EventResponse), args.Error(1)
+}

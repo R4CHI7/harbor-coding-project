@@ -13,3 +13,7 @@ type UserService interface {
 	GetAvailability(context.Context, int) (contract.UserAvailability, error)
 	GetAvailabilityOverlap(context.Context, int, int) (contract.UserAvailabilityOverlap, error)
 }
+
+type EventService interface {
+	Create(context.Context, int, contract.Event) (contract.EventResponse, error)
+}
