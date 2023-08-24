@@ -13,4 +13,5 @@ type User struct {
 
 	Availability UserAvailability
 	Slot         Slot
+	Event        Event
 }
