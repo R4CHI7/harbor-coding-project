@@ -55,7 +55,7 @@ func (suite *UserTestSuite) TestCreateShouldReturnErrorIfRepositoryFails() {
 	suite.mockUserRepository.On("Create", suite.ctx, model.User{Name: "test", Email: "test@example.xyz"}).Return(model.User{}, errors.New("some error"))
 
 	resp, err := suite.service.Create(suite.ctx, input)
-	suite.Error(err, "some error")
+	suite.Equal("some error", err.Error())
 	suite.Empty(resp)
 }
 
@@ -115,7 +115,7 @@ func (suite *UserTestSuite) TestSetAvailabilityShouldReturnErrorIfRepositoryFail
 	}).Return(model.UserAvailability{}, errors.New("some error"))
 
 	resp, err := suite.service.SetAvailability(suite.ctx, 1, input)
-	suite.Error(err, "some error")
+	suite.Equal("some error", err.Error())
 	suite.Empty(resp)
 }
 

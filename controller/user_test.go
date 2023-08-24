@@ -44,7 +44,7 @@ func (suite *UserTestSuite) TestCreateHappyFlow() {
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(res.StatusCode, http.StatusCreated)
+	suite.Equal(http.StatusCreated, res.StatusCode)
 	suite.Equal(`{"id":1}
 `, string(body))
 	suite.mockService.AssertExpectations(suite.T())
@@ -63,7 +63,7 @@ func (suite *UserTestSuite) TestCreateShouldReturnBadRequestWhenRequestBodyIsInc
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(res.StatusCode, http.StatusBadRequest)
+	suite.Equal(http.StatusBadRequest, res.StatusCode)
 	suite.Equal(`{"status_text":"bad request","message":"email is required"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertNotCalled(suite.T(), "Created")
@@ -83,7 +83,7 @@ func (suite *UserTestSuite) TestCreateShouldReturnServerErrorWhenServiceReturnsE
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(res.StatusCode, http.StatusInternalServerError)
+	suite.Equal(http.StatusInternalServerError, res.StatusCode)
 	suite.Equal(`{"status_text":"internal server error","message":"some error"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertExpectations(suite.T())
@@ -133,7 +133,7 @@ func (suite *UserTestSuite) TestSetAvailabilityHappyPath() {
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(res.StatusCode, http.StatusOK)
+	suite.Equal(http.StatusOK, res.StatusCode)
 	suite.Empty(body)
 	suite.mockService.AssertExpectations(suite.T())
 }
@@ -151,7 +151,7 @@ func (suite *UserTestSuite) TestSetAvailabilityShouldReturnBadRequestWhenRequest
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(res.StatusCode, http.StatusBadRequest)
+	suite.Equal(http.StatusBadRequest, res.StatusCode)
 	suite.Equal(`{"status_text":"bad request","message":"at least one day's availability is required"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertNotCalled(suite.T(), "SetAvailability")
@@ -201,7 +201,7 @@ func (suite *UserTestSuite) TestSetAvailabilityShouldReturnServerErrorWhenServic
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(res.StatusCode, http.StatusInternalServerError)
+	suite.Equal(http.StatusInternalServerError, res.StatusCode)
 	suite.Equal(`{"status_text":"internal server error","message":"some error"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertExpectations(suite.T())

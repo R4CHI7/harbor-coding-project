@@ -46,7 +46,7 @@ func (suite *UserTestSuite) TestCreateHappyFlow() {
 
 	resp, err := suite.repo.Create(context.Background(), model.User{Name: "test", Email: "test@example.xyz"})
 
-	suite.Equal(int(resp.ID), 1)
+	suite.Equal(1, int(resp.ID))
 	suite.NoError(err)
 	suite.NoError(suite.mock.ExpectationsWereMet())
 }
