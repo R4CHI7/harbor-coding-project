@@ -23,3 +23,7 @@ func (availability *UserAvailability) Bind(r *http.Request) error {
 
 	return nil
 }
+
+type UserAvailabilityOverlap struct {
+	Overlap []model.DayAvailability `json:"overlap"`
+}

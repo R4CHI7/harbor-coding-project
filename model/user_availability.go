@@ -6,8 +6,25 @@ import (
 	"gorm.io/datatypes"
 )
 
+type Day string
+
+const (
+	Monday    Day = "monday"
+	Tuesday   Day = "tuesday"
+	Wednesday Day = "wednesday"
+	Thursday  Day = "thursday"
+	Friday    Day = "friday"
+	Saturday  Day = "saturday"
+	Sunday    Day = "sunday"
+)
+
+type Availability struct {
+	StartTime datatypes.Time
+	EndTime   datatypes.Time
+}
+
 type DayAvailability struct {
-	Day       string         `json:"day"`
+	Day       Day            `json:"day"`
 	StartTime datatypes.Time `json:"start_time"`
 	EndTime   datatypes.Time `json:"end_time"`
 }
@@ -18,4 +35,15 @@ type UserAvailability struct {
 	MeetingDurationMins int
 	CreatedAt           time.Time `gorm:"autoCreateTime"`
 	UpdatedAt           time.Time `gorm:"autoUpdateTime"`
+}
+
+func (availability UserAvailability) GetAvailabilityMap() map[Day]Availability {
+	m := make(map[Day]Availability)
+	for _, a := range availability.Availability {
+		m[a.Day] = Availability{
+			StartTime: a.StartTime,
+			EndTime:   a.EndTime,
+		}
+	}
+	return m
 }

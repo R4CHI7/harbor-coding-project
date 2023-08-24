@@ -154,6 +154,136 @@ func (suite *UserTestSuite) TestGetAvailabilityReturnsErrorWhenRepositoryReturns
 	suite.Empty(resp)
 }
 
+func (suite *UserTestSuite) TestGerAvailabilityOverlapReturnsOverlapIfItExists() {
+	availability1 := []model.DayAvailability{
+		{
+			Day:       "monday",
+			StartTime: datatypes.NewTime(10, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "tuesday",
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "thursday",
+			StartTime: datatypes.NewTime(8, 0, 0, 0),
+			EndTime:   datatypes.NewTime(20, 0, 0, 0),
+		},
+	}
+	availability2 := []model.DayAvailability{
+		{
+			Day:       "monday",
+			StartTime: datatypes.NewTime(11, 15, 0, 0),
+			EndTime:   datatypes.NewTime(18, 0, 0, 0),
+		},
+		{
+			Day:       "wednesday",
+			StartTime: datatypes.NewTime(11, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "thursday",
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(18, 30, 0, 0),
+		},
+	}
+
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 1).Return(model.UserAvailability{UserID: 1, Availability: availability1, MeetingDurationMins: 30}, nil)
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 2).Return(model.UserAvailability{UserID: 2, Availability: availability2, MeetingDurationMins: 30}, nil)
+
+	expectedResp := contract.UserAvailabilityOverlap{
+		Overlap: []model.DayAvailability{
+			{
+				Day:       "monday",
+				StartTime: datatypes.NewTime(11, 15, 0, 0),
+				EndTime:   datatypes.NewTime(17, 0, 0, 0),
+			},
+			{
+				Day:       "thursday",
+				StartTime: datatypes.NewTime(9, 0, 0, 0),
+				EndTime:   datatypes.NewTime(18, 30, 0, 0),
+			},
+		},
+	}
+	resp, err := suite.service.GetAvailabilityOverlap(suite.ctx, 1, 2)
+	suite.Nil(err)
+	suite.Equal(2, len(resp.Overlap))
+	suite.Equal(expectedResp, resp) // TODO: This is a bit undeterministic due to order of the slice.
+}
+
+func (suite *UserTestSuite) TestGerAvailabilityOverlapReturnsNoOverlapIfItDoesNotExist() {
+	availability1 := []model.DayAvailability{
+		{
+			Day:       "monday",
+			StartTime: datatypes.NewTime(10, 0, 0, 0),
+			EndTime:   datatypes.NewTime(13, 0, 0, 0),
+		},
+		{
+			Day:       "tuesday",
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "thursday",
+			StartTime: datatypes.NewTime(18, 0, 0, 0),
+			EndTime:   datatypes.NewTime(23, 0, 0, 0),
+		},
+	}
+	availability2 := []model.DayAvailability{
+		{
+			Day:       "monday",
+			StartTime: datatypes.NewTime(14, 15, 0, 0),
+			EndTime:   datatypes.NewTime(18, 0, 0, 0),
+		},
+		{
+			Day:       "wednesday",
+			StartTime: datatypes.NewTime(11, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "thursday",
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 30, 0, 0),
+		},
+	}
+
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 1).Return(model.UserAvailability{UserID: 1, Availability: availability1, MeetingDurationMins: 30}, nil)
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 2).Return(model.UserAvailability{UserID: 2, Availability: availability2, MeetingDurationMins: 30}, nil)
+
+	resp, err := suite.service.GetAvailabilityOverlap(suite.ctx, 1, 2)
+	suite.Nil(err)
+	suite.Equal(0, len(resp.Overlap))
+}
+
+func (suite *UserTestSuite) TestGerAvailabilityOverlapReturnsErrorIfRepositoryReturnsError() {
+	availability1 := []model.DayAvailability{
+		{
+			Day:       "monday",
+			StartTime: datatypes.NewTime(10, 0, 0, 0),
+			EndTime:   datatypes.NewTime(13, 0, 0, 0),
+		},
+		{
+			Day:       "tuesday",
+			StartTime: datatypes.NewTime(9, 0, 0, 0),
+			EndTime:   datatypes.NewTime(17, 0, 0, 0),
+		},
+		{
+			Day:       "thursday",
+			StartTime: datatypes.NewTime(18, 0, 0, 0),
+			EndTime:   datatypes.NewTime(23, 0, 0, 0),
+		},
+	}
+
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 1).Return(model.UserAvailability{UserID: 1, Availability: availability1, MeetingDurationMins: 30}, nil)
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 2).Return(model.UserAvailability{}, errors.New("some error"))
+
+	resp, err := suite.service.GetAvailabilityOverlap(suite.ctx, 1, 2)
+	suite.Equal("some error", err.Error())
+	suite.Equal(0, len(resp.Overlap))
+}
+
 func TestUserTestSuite(t *testing.T) {
 	suite.Run(t, new(UserTestSuite))
 }
