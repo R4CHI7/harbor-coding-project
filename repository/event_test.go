@@ -5,6 +5,7 @@ import (
 	"errors"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/harbor-xyz/coding-project/model"
@@ -65,6 +66,28 @@ func (suite *EventTestSuite) TestCreateReturnsErrorWhenDBFails() {
 	suite.Empty(resp)
 	suite.Error(err, "some error")
 	suite.NoError(suite.mock.ExpectationsWereMet())
+}
+
+func (suite *EventTestSuite) TestGetReturnsDataIfExists() {
+	suite.mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1`)).
+		WithArgs(1).WillReturnRows(sqlmock.NewRows(
+		[]string{"id", "user_id", "slot_id", "invitee_email", "invitee_name", "invitee_notes", "created_at", "updated_at", "deleted_at"},
+	).AddRow(1, 1, 1, "test@example.xyz", "test", "test", time.Now(), time.Now(), time.Now()).
+		AddRow(2, 1, 2, "test1@example.xyz", "test", "test", time.Now(), time.Now(), time.Now()))
+
+	resp, err := suite.repo.Get(context.Background(), 1)
+	suite.NoError(err)
+	suite.Equal(2, len(resp))
+	suite.Equal(1, int(resp[0].ID))
+}
+
+func (suite *EventTestSuite) TestGetReturnsErrorIfDBReturnsError() {
+	suite.mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1`)).
+		WithArgs(1).WillReturnError(errors.New("some error"))
+
+	resp, err := suite.repo.Get(context.Background(), 1)
+	suite.Equal("some error", err.Error())
+	suite.Nil(resp)
 }
 
 func TestEventTestSuite(t *testing.T) {
