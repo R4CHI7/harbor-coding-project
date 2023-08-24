@@ -11,4 +11,5 @@ type UserService interface {
 	Create(context.Context, contract.User) (contract.UserResponse, error)
 	SetAvailability(context.Context, int, contract.UserAvailability) (model.UserAvailability, error)
 	GetAvailability(context.Context, int) (contract.UserAvailability, error)
+	GetAvailabilityOverlap(context.Context, int, int) (contract.UserAvailabilityOverlap, error)
 }

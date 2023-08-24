@@ -48,12 +48,12 @@ func (user User) GetAvailability(ctx context.Context, userID int) (contract.User
 	}, nil
 }
 
-func (user User) GetAvailabilityOverlap(ctx context.Context, userID1, userID2 int) (contract.UserAvailabilityOverlap, error) {
-	availability1, err := user.availabilityRepository.Get(ctx, userID1)
+func (user User) GetAvailabilityOverlap(ctx context.Context, user1ID, user2ID int) (contract.UserAvailabilityOverlap, error) {
+	availability1, err := user.availabilityRepository.Get(ctx, user1ID)
 	if err != nil {
 		return contract.UserAvailabilityOverlap{}, err
 	}
-	availability2, err := user.availabilityRepository.Get(ctx, userID2)
+	availability2, err := user.availabilityRepository.Get(ctx, user2ID)
 	if err != nil {
 		return contract.UserAvailabilityOverlap{}, err
 	}

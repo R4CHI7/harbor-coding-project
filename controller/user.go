@@ -2,8 +2,10 @@ package controller
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/render"
 
@@ -57,11 +59,9 @@ func (user User) SetAvailability(w http.ResponseWriter, r *http.Request) {
 
 func (user User) GetAvailability(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
 	userID := ctx.Value(ContextUserIDKey).(int)
 
 	availability, err := user.userService.GetAvailability(ctx, userID)
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			render.Render(w, r, contract.NotFoundErrorRenderer(err))
@@ -72,6 +72,39 @@ func (user User) GetAvailability(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, availability)
+}
+
+func (user User) GetAvailabilityOverlap(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	user1ID := ctx.Value(ContextUserIDKey).(int)
+	userIDParam := r.URL.Query().Get("user_id")
+	if userIDParam == "" {
+		render.Render(w, r, contract.ErrorRenderer(errors.New("user ID is required")))
+		return
+	}
+	user2ID, err := strconv.Atoi(userIDParam)
+	if err != nil {
+		render.Render(w, r, contract.ErrorRenderer(errors.New("invalid user ID")))
+		return
+	}
+
+	if user1ID == user2ID {
+		render.Render(w, r, contract.ErrorRenderer(errors.New("user IDs should be different")))
+		return
+	}
+
+	overlap, err := user.userService.GetAvailabilityOverlap(ctx, user1ID, user2ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			render.Render(w, r, contract.NotFoundErrorRenderer(err))
+			return
+		}
+		render.Render(w, r, contract.ServerErrorRenderer(err))
+		return
+	}
+
+	render.JSON(w, r, overlap)
+
 }
 
 func NewUser(userService UserService) User {

@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -31,6 +31,7 @@ func Init() *chi.Mux {
 			r.Use(userIDContext)
 			r.Post("/availability", userController.SetAvailability)
 			r.Get("/availability", userController.GetAvailability)
+			r.Get("/availability_overlap", userController.GetAvailabilityOverlap)
 		})
 	})
 
@@ -41,12 +42,12 @@ func userIDContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := chi.URLParam(r, "userID")
 		if userID == "" {
-			render.Render(w, r, contract.ErrorRenderer(fmt.Errorf("user ID is required")))
+			render.Render(w, r, contract.ErrorRenderer(errors.New("user ID is required")))
 			return
 		}
 		id, err := strconv.Atoi(userID)
 		if err != nil {
-			render.Render(w, r, contract.ErrorRenderer(fmt.Errorf("invalid user ID")))
+			render.Render(w, r, contract.ErrorRenderer(errors.New("invalid user ID")))
 		}
 		ctx := context.WithValue(r.Context(), controller.ContextUserIDKey, id)
 		next.ServeHTTP(w, r.WithContext(ctx))

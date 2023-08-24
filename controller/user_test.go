@@ -284,6 +284,82 @@ func (suite *UserTestSuite) TestGetAvailabilityReturnsNotFoundErrorWhenAvailabil
 `, string(body))
 }
 
+func (suite *UserTestSuite) TestGetAvailabilityOverlapHappyPath() {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?user_id=2", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	req.Header.Add("Content-Type", "application/json")
+	suite.mockService.On("GetAvailabilityOverlap", req.Context(), 1, 2).Return(contract.UserAvailabilityOverlap{
+		Overlap: []model.DayAvailability{
+			{
+				Day:       "monday",
+				StartTime: datatypes.NewTime(10, 0, 0, 0),
+				EndTime:   datatypes.NewTime(17, 0, 0, 0),
+			},
+			{
+				Day:       "tuesday",
+				StartTime: datatypes.NewTime(9, 0, 0, 0),
+				EndTime:   datatypes.NewTime(17, 0, 0, 0),
+			},
+		},
+	}, nil)
+
+	suite.controller.GetAvailabilityOverlap(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusOK, w.Result().StatusCode)
+	suite.Equal(`{"overlap":[{"day":"monday","start_time":"10:00:00","end_time":"17:00:00"},{"day":"tuesday","start_time":"09:00:00","end_time":"17:00:00"}]}
+`, string(body))
+}
+
+func (suite *UserTestSuite) TestGetAvailabilityOverlapReturnsNullResponseWhenNoOverlapExists() {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?user_id=2", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	req.Header.Add("Content-Type", "application/json")
+	suite.mockService.On("GetAvailabilityOverlap", req.Context(), 1, 2).Return(contract.UserAvailabilityOverlap{}, nil)
+
+	suite.controller.GetAvailabilityOverlap(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusOK, w.Result().StatusCode)
+	suite.Equal(`{"overlap":null}
+`, string(body))
+}
+
+func (suite *UserTestSuite) TestGetAvailabilityOverlapReturnsErrorWhenServiceReturnsError() {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?user_id=2", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	req.Header.Add("Content-Type", "application/json")
+	suite.mockService.On("GetAvailabilityOverlap", req.Context(), 1, 2).Return(contract.UserAvailabilityOverlap{}, errors.New("some error"))
+
+	suite.controller.GetAvailabilityOverlap(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusInternalServerError, w.Result().StatusCode)
+	suite.Equal(`{"status_text":"internal server error","message":"some error"}
+`, string(body))
+}
+
 func TestUserTest(t *testing.T) {
 	suite.Run(t, new(UserTestSuite))
 }

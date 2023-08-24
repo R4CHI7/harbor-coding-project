@@ -26,3 +26,8 @@ func (mock *MockUserService) GetAvailability(ctx context.Context, userID int) (c
 	args := mock.Called(ctx, userID)
 	return args.Get(0).(contract.UserAvailability), args.Error(1)
 }
+
+func (mock *MockUserService) GetAvailabilityOverlap(ctx context.Context, user1ID, user2ID int) (contract.UserAvailabilityOverlap, error) {
+	args := mock.Called(ctx, user1ID, user2ID)
+	return args.Get(0).(contract.UserAvailabilityOverlap), args.Error(1)
+}
