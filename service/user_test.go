@@ -44,7 +44,7 @@ func (suite *UserTestSuite) TestCreateHappyFlow() {
 
 	resp, err := suite.service.Create(suite.ctx, input)
 	suite.Nil(err)
-	suite.Equal(expectedResp, resp)
+	suite.Equal(contract.UserResponse{ID: 1}, resp)
 }
 
 func (suite *UserTestSuite) TestCreateShouldReturnErrorIfRepositoryFails() {

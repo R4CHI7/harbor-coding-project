@@ -21,3 +21,7 @@ func (user *User) Bind(r *http.Request) error {
 
 	return nil
 }
+
+type UserResponse struct {
+	ID uint `json:"id"`
+}

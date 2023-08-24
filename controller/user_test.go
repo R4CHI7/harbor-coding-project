@@ -33,7 +33,7 @@ func (suite *UserTestSuite) TestCreateHappyFlow() {
 	req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(`{"name":"test","email":"test@example.xyz"}`))
 	req.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	suite.mockService.On("Create", req.Context(), contract.User{Name: "test", Email: "test@example.xyz"}).Return(model.User{}, nil)
+	suite.mockService.On("Create", req.Context(), contract.User{Name: "test", Email: "test@example.xyz"}).Return(contract.UserResponse{ID: 1}, nil)
 
 	suite.controller.Create(w, req)
 
@@ -44,7 +44,8 @@ func (suite *UserTestSuite) TestCreateHappyFlow() {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
 	suite.Equal(res.StatusCode, http.StatusCreated)
-	suite.Empty(body)
+	suite.Equal(`{"id":1}
+`, string(body))
 	suite.mockService.AssertExpectations(suite.T())
 }
 
@@ -71,7 +72,7 @@ func (suite *UserTestSuite) TestCreateShouldReturnServerErrorWhenServiceReturnsE
 	req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(`{"name":"test","email":"test@example.xyz"}`))
 	req.Header.Add("Content-Type", "application/json")
 	w := httptest.NewRecorder()
-	suite.mockService.On("Create", req.Context(), contract.User{Name: "test", Email: "test@example.xyz"}).Return(model.User{}, errors.New("some error"))
+	suite.mockService.On("Create", req.Context(), contract.User{Name: "test", Email: "test@example.xyz"}).Return(contract.UserResponse{}, errors.New("some error"))
 
 	suite.controller.Create(w, req)
 

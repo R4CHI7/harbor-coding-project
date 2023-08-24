@@ -12,13 +12,18 @@ type User struct {
 	availabilityRepository UserAvailabilityRepository
 }
 
-func (user User) Create(ctx context.Context, input contract.User) (model.User, error) {
+func (user User) Create(ctx context.Context, input contract.User) (contract.UserResponse, error) {
 	userObj := model.User{
 		Name:  input.Name,
 		Email: input.Email,
 	}
 
-	return user.userRepository.Create(ctx, userObj)
+	userObj, err := user.userRepository.Create(ctx, userObj)
+	if err != nil {
+		return contract.UserResponse{}, err
+	}
+
+	return contract.UserResponse{ID: userObj.ID}, nil
 }
 
 func (user User) SetAvailability(ctx context.Context, userID int, input contract.UserAvailability) (model.UserAvailability, error) {

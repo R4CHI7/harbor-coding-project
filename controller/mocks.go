@@ -12,9 +12,9 @@ type MockUserService struct {
 	mock.Mock
 }
 
-func (mock *MockUserService) Create(ctx context.Context, input contract.User) (model.User, error) {
+func (mock *MockUserService) Create(ctx context.Context, input contract.User) (contract.UserResponse, error) {
 	args := mock.Called(ctx, input)
-	return args.Get(0).(model.User), args.Error(1)
+	return args.Get(0).(contract.UserResponse), args.Error(1)
 }
 
 func (mock *MockUserService) SetAvailability(ctx context.Context, userID int, input contract.UserAvailability) (model.UserAvailability, error) {

@@ -23,13 +23,14 @@ func (user User) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := user.userService.Create(ctx, input)
+	resp, err := user.userService.Create(ctx, input)
 	if err != nil {
 		render.Render(w, r, contract.ServerErrorRenderer(err))
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	render.Status(r, http.StatusCreated)
+	render.JSON(w, r, resp)
 }
 
 func (user User) SetAvailability(w http.ResponseWriter, r *http.Request) {
