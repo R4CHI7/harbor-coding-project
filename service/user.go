@@ -31,6 +31,18 @@ func (user User) SetAvailability(ctx context.Context, userID int, input contract
 	return user.availabilityRepository.Set(ctx, availabilityObj)
 }
 
+func (user User) GetAvailability(ctx context.Context, userID int) (contract.UserAvailability, error) {
+	availability, err := user.availabilityRepository.Get(ctx, userID)
+	if err != nil {
+		return contract.UserAvailability{}, err
+	}
+
+	return contract.UserAvailability{
+		Availability:        availability.Availability,
+		MeetingDurationMins: availability.MeetingDurationMins,
+	}, nil
+}
+
 func NewUser(userRepository UserRepository, availabilityRepository UserAvailabilityRepository) User {
 	return User{userRepository: userRepository, availabilityRepository: availabilityRepository}
 }

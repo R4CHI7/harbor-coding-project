@@ -43,7 +43,7 @@ func (suite *UserTestSuite) TestCreateHappyFlow() {
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(w.Result().StatusCode, http.StatusCreated)
+	suite.Equal(res.StatusCode, http.StatusCreated)
 	suite.Empty(body)
 	suite.mockService.AssertExpectations(suite.T())
 }
@@ -61,7 +61,7 @@ func (suite *UserTestSuite) TestCreateShouldReturnBadRequestWhenRequestBodyIsInc
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(w.Result().StatusCode, http.StatusBadRequest)
+	suite.Equal(res.StatusCode, http.StatusBadRequest)
 	suite.Equal(`{"status_text":"bad request","message":"email is required"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertNotCalled(suite.T(), "Created")
@@ -81,7 +81,7 @@ func (suite *UserTestSuite) TestCreateShouldReturnServerErrorWhenServiceReturnsE
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(w.Result().StatusCode, http.StatusInternalServerError)
+	suite.Equal(res.StatusCode, http.StatusInternalServerError)
 	suite.Equal(`{"status_text":"internal server error","message":"some error"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertExpectations(suite.T())
@@ -131,7 +131,7 @@ func (suite *UserTestSuite) TestSetAvailabilityHappyPath() {
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(w.Result().StatusCode, http.StatusOK)
+	suite.Equal(res.StatusCode, http.StatusOK)
 	suite.Empty(body)
 	suite.mockService.AssertExpectations(suite.T())
 }
@@ -149,7 +149,7 @@ func (suite *UserTestSuite) TestSetAvailabilityShouldReturnBadRequestWhenRequest
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(w.Result().StatusCode, http.StatusBadRequest)
+	suite.Equal(res.StatusCode, http.StatusBadRequest)
 	suite.Equal(`{"status_text":"bad request","message":"at least one day's availability is required"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertNotCalled(suite.T(), "SetAvailability")
@@ -199,10 +199,66 @@ func (suite *UserTestSuite) TestSetAvailabilityShouldReturnServerErrorWhenServic
 	if err != nil {
 		suite.Error(errors.New("expected error to be nil got"), err)
 	}
-	suite.Equal(w.Result().StatusCode, http.StatusInternalServerError)
+	suite.Equal(res.StatusCode, http.StatusInternalServerError)
 	suite.Equal(`{"status_text":"internal server error","message":"some error"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockService.AssertExpectations(suite.T())
+}
+
+func (suite *UserTestSuite) TestGetAvailabilityHappyPath() {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	req.Header.Add("Content-Type", "application/json")
+	suite.mockService.On("GetAvailability", req.Context(), 1).Return(contract.UserAvailability{
+		Availability: []model.DayAvailability{
+			{
+				Day:       "monday",
+				StartTime: datatypes.NewTime(10, 0, 0, 0),
+				EndTime:   datatypes.NewTime(17, 0, 0, 0),
+			},
+			{
+				Day:       "tuesday",
+				StartTime: datatypes.NewTime(9, 0, 0, 0),
+				EndTime:   datatypes.NewTime(17, 0, 0, 0),
+			},
+		},
+		MeetingDurationMins: 30,
+	}, nil)
+
+	suite.controller.GetAvailability(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusOK, w.Result().StatusCode)
+	suite.Equal(`{"availability":[{"day":"monday","start_time":"10:00:00","end_time":"17:00:00"},{"day":"tuesday","start_time":"09:00:00","end_time":"17:00:00"}],"meeting_duration_mins":30}
+`, string(body))
+}
+
+func (suite *UserTestSuite) TestGetAvailabilityReturnsServerErrorWhenServiceReturnsError() {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	req.Header.Add("Content-Type", "application/json")
+	suite.mockService.On("GetAvailability", req.Context(), 1).Return(contract.UserAvailability{}, errors.New("some error"))
+
+	suite.controller.GetAvailability(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusInternalServerError, w.Result().StatusCode)
+	suite.Equal(`{"status_text":"internal server error","message":"some error"}
+`, string(body))
 }
 
 func TestUserTest(t *testing.T) {

@@ -12,4 +12,5 @@ type UserRepository interface {
 
 type UserAvailabilityRepository interface {
 	Set(context.Context, model.UserAvailability) (model.UserAvailability, error)
+	Get(context.Context, int) (model.UserAvailability, error)
 }

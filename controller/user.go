@@ -53,6 +53,21 @@ func (user User) SetAvailability(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (user User) GetAvailability(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	userID := ctx.Value(ContextUserIDKey).(int)
+
+	availability, err := user.userService.GetAvailability(ctx, userID)
+
+	if err != nil {
+		render.Render(w, r, contract.ServerErrorRenderer(err))
+		return
+	}
+
+	render.JSON(w, r, availability)
+}
+
 func NewUser(userService UserService) User {
 	return User{
 		userService: userService,

@@ -30,6 +30,7 @@ func Init() *chi.Mux {
 		r.Route("/{userID}", func(r chi.Router) {
 			r.Use(userIDContext)
 			r.Post("/availability", userController.SetAvailability)
+			r.Get("/availability", userController.GetAvailability)
 		})
 	})
 

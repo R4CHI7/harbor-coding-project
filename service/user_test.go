@@ -119,6 +119,41 @@ func (suite *UserTestSuite) TestSetAvailabilityShouldReturnErrorIfRepositoryFail
 	suite.Empty(resp)
 }
 
+func (suite *UserTestSuite) TestGetAvailability() {
+	availability := model.UserAvailability{
+		UserID: 1,
+		Availability: []model.DayAvailability{
+			{
+				Day:       "monday",
+				StartTime: datatypes.NewTime(10, 0, 0, 0),
+				EndTime:   datatypes.NewTime(17, 0, 0, 0),
+			},
+			{
+				Day:       "tuesday",
+				StartTime: datatypes.NewTime(9, 0, 0, 0),
+				EndTime:   datatypes.NewTime(17, 0, 0, 0),
+			},
+		},
+		MeetingDurationMins: 30,
+	}
+
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 1).Return(availability, nil)
+
+	resp, err := suite.service.GetAvailability(suite.ctx, 1)
+
+	suite.Nil(err)
+	suite.Equal(availability.MeetingDurationMins, resp.MeetingDurationMins)
+}
+
+func (suite *UserTestSuite) TestGetAvailabilityReturnsErrorWhenRepositoryReturnsError() {
+	suite.mockUserAvailabilityRepository.On("Get", suite.ctx, 1).Return(model.UserAvailability{}, errors.New("some error"))
+
+	resp, err := suite.service.GetAvailability(suite.ctx, 1)
+
+	suite.Equal("some error", err.Error())
+	suite.Empty(resp)
+}
+
 func TestUserTestSuite(t *testing.T) {
 	suite.Run(t, new(UserTestSuite))
 }

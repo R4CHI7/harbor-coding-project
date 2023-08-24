@@ -24,3 +24,8 @@ func (mock *MockUserAvailabilityRepository) Set(ctx context.Context, ua model.Us
 	args := mock.Called(ctx, ua)
 	return args.Get(0).(model.UserAvailability), args.Error(1)
 }
+
+func (mock *MockUserAvailabilityRepository) Get(ctx context.Context, userID int) (model.UserAvailability, error) {
+	args := mock.Called(ctx, userID)
+	return args.Get(0).(model.UserAvailability), args.Error(1)
+}
