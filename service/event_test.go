@@ -53,6 +53,7 @@ func (suite *EventTestSuite) TestCreateHappyFlow() {
 	}, nil)
 	suite.mockEventRepository.On("Create", suite.ctx, model.Event{UserID: 1, SlotID: 1, InviteeName: "test", InviteeEmail: "test@example.xyz", StartTime: now, EndTime: now.Add(30 * time.Minute)}).
 		Return(expectedResp, nil)
+	suite.mockSlotRepository.On("BookSlot", suite.ctx, 1).Return(nil)
 
 	resp, err := suite.service.Create(suite.ctx, 1, input)
 	suite.Nil(err)

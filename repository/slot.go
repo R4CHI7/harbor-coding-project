@@ -15,7 +15,7 @@ type Slot struct {
 
 func (slot Slot) Get(ctx context.Context, userID int, startTimeThreshold, endTimeThreshold time.Time) ([]model.Slot, error) {
 	slots := make([]model.Slot, 0)
-	err := slot.db.Find(&slots, "user_id = $1 AND start_time BETWEEN $2 AND $3", userID, startTimeThreshold, endTimeThreshold).Error
+	err := slot.db.Order("id").Find(&slots, "user_id = $1 AND start_time BETWEEN $2 AND $3", userID, startTimeThreshold, endTimeThreshold).Error
 	if err != nil {
 		log.Printf("error occurred while fetching slots for user: %s", err.Error())
 		return nil, err
