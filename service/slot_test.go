@@ -46,7 +46,7 @@ func (suite *SlotTestSuite) TestCreateHappyFlow() {
 	}, nil)
 	suite.mockSlotRepository.On("Create", suite.ctx, mock.Anything).Return(nil)
 
-	numSlots, err := suite.service.CreateSlots(suite.ctx, 1, 14)
+	numSlots, err := suite.service.Create(suite.ctx, 1, 14)
 	suite.Equal(60, numSlots)
 	suite.Nil(err)
 }

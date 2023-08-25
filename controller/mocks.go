@@ -40,3 +40,12 @@ func (mock *MockEventService) Create(ctx context.Context, userID int, input cont
 	args := mock.Called(ctx, userID, input)
 	return args.Get(0).(contract.EventResponse), args.Error(1)
 }
+
+type MockSlotService struct {
+	mock.Mock
+}
+
+func (mock *MockSlotService) Create(ctx context.Context, userID, numDays int) (int, error) {
+	args := mock.Called(ctx, userID, numDays)
+	return args.Int(0), args.Error(1)
+}

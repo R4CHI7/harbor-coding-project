@@ -25,7 +25,7 @@ func (suite *EventTestSuite) SetupTest() {
 }
 
 func (suite *EventTestSuite) TestCreateHappyFlow() {
-	req := httptest.NewRequest(http.MethodPost, "/users",
+	req := httptest.NewRequest(http.MethodPost, "/users/1/event",
 		strings.NewReader(`{"slot_id":1,"invitee_email":"test@example.xyz","invitee_name":"test","invitee_notes":"test"}`))
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")
@@ -43,7 +43,7 @@ func (suite *EventTestSuite) TestCreateHappyFlow() {
 }
 
 func (suite *EventTestSuite) TestCreatShouldReturnErrorWhenServiceReturnsError() {
-	req := httptest.NewRequest(http.MethodPost, "/users",
+	req := httptest.NewRequest(http.MethodPost, "/users/1/event",
 		strings.NewReader(`{"slot_id":1,"invitee_email":"test@example.xyz","invitee_name":"test","invitee_notes":"test"}`))
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")

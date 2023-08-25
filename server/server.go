@@ -25,6 +25,7 @@ func Init() *chi.Mux {
 	db := database.Get()
 	userController := controller.NewUser(service.NewUser(repository.NewUser(db), repository.NewUserAvailability(db)))
 	eventController := controller.NewEvent(service.NewEvent(repository.NewEvent(db)))
+	slotController := controller.NewSlot(service.NewSlot(repository.NewSlot(db), repository.NewUserAvailability(db)))
 
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", userController.Create)
@@ -34,6 +35,7 @@ func Init() *chi.Mux {
 			r.Get("/availability", userController.GetAvailability)
 			r.Get("/availability_overlap", userController.GetAvailabilityOverlap)
 			r.Post("/event", eventController.Create)
+			r.Post("/slots", slotController.Create)
 		})
 	})
 

@@ -13,7 +13,7 @@ type Slot struct {
 	availabilityRepository UserAvailabilityRepository
 }
 
-func (slot Slot) CreateSlots(ctx context.Context, userID, numDays int) (int, error) {
+func (slot Slot) Create(ctx context.Context, userID, numDays int) (int, error) {
 	now := time.Now()
 	// Check if slots already exist in the given time period
 	slots, err := slot.slotRepository.Get(ctx, userID, now, now.AddDate(0, 0, numDays))

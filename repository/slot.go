@@ -24,10 +24,11 @@ func (slot Slot) Get(ctx context.Context, userID int, startTimeThreshold, endTim
 }
 
 func (slot Slot) Create(ctx context.Context, slots []model.Slot) error {
-	// startDate := time.Now()
-	// endDate := time.Now().AddDate(0, 0, numDays)
-
-	return nil
+	err := slot.db.Create(slots).Error
+	if err != nil {
+		log.Printf("error occurred while inserting slots: %s", err.Error())
+	}
+	return err
 }
 
 func NewSlot(db *gorm.DB) Slot {
