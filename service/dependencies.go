@@ -20,6 +20,7 @@ type SlotRepository interface {
 	Create(context.Context, []model.Slot) error
 	Get(context.Context, int, time.Time, time.Time) ([]model.Slot, error)
 	GetByID(context.Context, int) (model.Slot, error)
+	DeleteByID(context.Context, int) error
 }
 
 type EventRepository interface {

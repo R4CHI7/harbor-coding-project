@@ -41,6 +41,16 @@ func (slot Slot) GetByID(ctx context.Context, slotID int) (model.Slot, error) {
 	return slotObj, nil
 }
 
+func (slot Slot) DeleteByID(ctx context.Context, slotID int) error {
+	slotObj := model.Slot{ID: uint(slotID)}
+	err := slot.db.Model(&slotObj).Updates(model.Slot{Status: model.StatusDeleted, DeletedAt: time.Now()}).Error
+	if err != nil {
+		log.Printf("error occurred while deleting slot from db: %s", err.Error())
+		return err
+	}
+	return nil
+}
+
 func NewSlot(db *gorm.DB) Slot {
 	return Slot{db: db}
 }

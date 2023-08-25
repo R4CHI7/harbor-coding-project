@@ -89,6 +89,11 @@ func (slot Slot) GetAll(ctx context.Context, userID int) (contract.SlotList, err
 	return contract.SlotList{Slots: resp}, nil
 }
 
+func (slot Slot) DeleteByID(ctx context.Context, slotID int) error {
+	return slot.slotRepository.DeleteByID(ctx, slotID)
+
+}
+
 func NewSlot(slotRepository SlotRepository, availabilityRepository UserAvailabilityRepository) Slot {
 	return Slot{slotRepository: slotRepository, availabilityRepository: availabilityRepository}
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/harbor-xyz/coding-project/contract"
 )
@@ -65,6 +66,34 @@ func (slot Slot) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, slots)
+}
+
+// Delete - Deletes slot by ID
+// @Summary This API returns deletes a slot by ID.
+// @Tags slot
+// @Accept  json
+// @Produce  json
+// @Param user_id path int true "user id"
+// @Param slot_id path int true "slot id"
+// @Router /users/{user_id}/slots/{slot_id} [delete]
+func (slot Slot) Delete(w http.ResponseWriter, r *http.Request) {
+	slotID := chi.URLParam(r, "slotID")
+	if slotID == "" {
+		render.Render(w, r, contract.ErrorRenderer(errors.New("user ID is required")))
+		return
+	}
+	id, err := strconv.Atoi(slotID)
+	if err != nil {
+		render.Render(w, r, contract.ErrorRenderer(errors.New("invalid user ID")))
+	}
+
+	err = slot.slotService.DeleteByID(r.Context(), id)
+	if err != nil {
+		render.Render(w, r, contract.ServerErrorRenderer(err))
+		return
+	}
+
+	render.Status(r, http.StatusOK)
 }
 
 func NewSlot(slotService SlotService) Slot {

@@ -43,6 +43,7 @@ func Init() *chi.Mux {
 			r.Route("/slots", func(r chi.Router) {
 				r.Post("/", slotController.Create)
 				r.Get("/", slotController.GetAll)
+				r.Delete("/{slotID}", slotController.Delete)
 			})
 		})
 	})

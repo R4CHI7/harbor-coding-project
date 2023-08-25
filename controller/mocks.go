@@ -59,3 +59,8 @@ func (mock *MockSlotService) GetAll(ctx context.Context, userID int) (contract.S
 	args := mock.Called(ctx, userID)
 	return args.Get(0).(contract.SlotList), args.Error(1)
 }
+
+func (mock *MockSlotService) DeleteByID(ctx context.Context, slotID int) error {
+	args := mock.Called(ctx, slotID)
+	return args.Error(0)
+}

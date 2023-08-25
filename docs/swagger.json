@@ -262,6 +262,37 @@
                 ],
                 "responses": {}
             }
+        },
+        "/users/{user_id}/slots/{slot_id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slot"
+                ],
+                "summary": "This API returns deletes a slot by ID.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "slot id",
+                        "name": "slot_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
         }
     },
     "definitions": {

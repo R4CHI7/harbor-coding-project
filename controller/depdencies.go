@@ -22,4 +22,5 @@ type EventService interface {
 type SlotService interface {
 	Create(context.Context, int, int) (int, error)
 	GetAll(context.Context, int) (contract.SlotList, error)
+	DeleteByID(context.Context, int) error
 }

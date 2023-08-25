@@ -276,4 +276,25 @@ paths:
       summary: This API creates slots for a user for given number of days.
       tags:
       - slot
+  /users/{user_id}/slots/{slot_id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: slot id
+        in: path
+        name: slot_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: This API returns deletes a slot by ID.
+      tags:
+      - slot
 swagger: "2.0"

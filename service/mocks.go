@@ -63,3 +63,8 @@ func (mock *MockSlotRepository) GetByID(ctx context.Context, slotID int) (model.
 	args := mock.Called(ctx, slotID)
 	return args.Get(0).(model.Slot), args.Error(1)
 }
+
+func (mock *MockSlotRepository) DeleteByID(ctx context.Context, slotID int) error {
+	args := mock.Called(ctx, slotID)
+	return args.Error(0)
+}
