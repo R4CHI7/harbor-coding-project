@@ -36,5 +36,11 @@ type EventResponse struct {
 	InviteeEmail string    `json:"invitee_email"`
 	InviteeName  string    `json:"invitee_name"`
 	InviteeNotes string    `json:"invitee_notes"`
+	StartTime    time.Time `json:"start_time"`
+	EndTime      time.Time `json:"end_time"`
 	CreatedAt    time.Time `json:"created_at"`
+}
+
+type EventListResponse struct {
+	Events []EventResponse `json:"events"`
 }

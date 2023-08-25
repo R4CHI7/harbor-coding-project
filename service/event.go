@@ -40,7 +40,33 @@ func (event Event) Create(ctx context.Context, userID int, input contract.Event)
 		InviteeName:  eventObj.InviteeName,
 		InviteeNotes: eventObj.InviteeNotes,
 		CreatedAt:    eventObj.CreatedAt,
+		StartTime:    eventObj.StartTime,
+		EndTime:      eventObj.EndTime,
 	}, nil
+}
+
+func (event Event) Get(ctx context.Context, userID int) (contract.EventListResponse, error) {
+	events, err := event.eventRepository.Get(ctx, userID)
+	if err != nil {
+		return contract.EventListResponse{}, err
+	}
+
+	resp := make([]contract.EventResponse, 0)
+	for _, eventObj := range events {
+		resp = append(resp, contract.EventResponse{
+			ID:           int(eventObj.ID),
+			UserID:       int(eventObj.UserID),
+			SlotID:       int(eventObj.SlotID),
+			InviteeEmail: eventObj.InviteeEmail,
+			InviteeName:  eventObj.InviteeName,
+			InviteeNotes: eventObj.InviteeNotes,
+			CreatedAt:    eventObj.CreatedAt,
+			StartTime:    eventObj.StartTime,
+			EndTime:      eventObj.EndTime,
+		})
+	}
+
+	return contract.EventListResponse{Events: resp}, nil
 }
 
 func NewEvent(eventRepository EventRepository, slotRepository SlotRepository) Event {

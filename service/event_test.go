@@ -84,6 +84,44 @@ func (suite *EventTestSuite) TestCreateShouldReturnErrorIfRepositoryReturnsError
 	suite.Empty(resp)
 }
 
+func (suite *EventTestSuite) TestGetHappyFlow() {
+	now := time.Now()
+	suite.mockEventRepository.On("Get", suite.ctx, 1).Return([]model.Event{
+		{
+			ID:           1,
+			UserID:       1,
+			SlotID:       1,
+			InviteeEmail: "test@example.xyz",
+			InviteeName:  "test",
+			StartTime:    now,
+			EndTime:      now.Add(30 * time.Minute),
+			CreatedAt:    now,
+		},
+		{
+			ID:           2,
+			UserID:       1,
+			SlotID:       2,
+			InviteeEmail: "test1@example.xyz",
+			InviteeName:  "test1",
+			StartTime:    now,
+			EndTime:      now.Add(30 * time.Minute),
+			CreatedAt:    now,
+		},
+	}, nil)
+
+	resp, err := suite.service.Get(suite.ctx, 1)
+	suite.NoError(err)
+	suite.Equal(2, len(resp.Events))
+}
+
+func (suite *EventTestSuite) TestGetReturnsErrorIfRepositoryReturnsError() {
+	suite.mockEventRepository.On("Get", suite.ctx, 1).Return([]model.Event{}, errors.New("some error"))
+
+	resp, err := suite.service.Get(suite.ctx, 1)
+	suite.Equal("some error", err.Error())
+	suite.Empty(resp)
+}
+
 func TestEventTestSuite(t *testing.T) {
 	suite.Run(t, new(EventTestSuite))
 }

@@ -24,5 +24,5 @@ type SlotRepository interface {
 
 type EventRepository interface {
 	Create(context.Context, model.Event) (model.Event, error)
-	// Get(context.Context, int) ([]model.Event, error)
+	Get(context.Context, int) ([]model.Event, error)
 }
