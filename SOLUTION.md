@@ -31,7 +31,7 @@ Due to a defined timeline, certain things were hacked around or were not develop
 * Slots need to be created manually. An API is provided for the same. This can be automated using a cron job.
 * The logs produced by the system are not structured.
 * The error messages returned by the APIs are not masked some times and may report messages directly from the database, in some cases.
-* Some corner unit test cases are skipped. A couple of APIs don't have unit tests at all.
+* Some corner unit test cases are skipped. A couple of APIs don't have any unit tests.
 
 ### Running the code
 

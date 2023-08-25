@@ -1,17 +1,11 @@
 package server
 
 import (
-	"context"
-	"errors"
-	"net/http"
-	"strconv"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	httpSwagger "github.com/swaggo/http-swagger"
 
-	"github.com/harbor-xyz/coding-project/contract"
 	"github.com/harbor-xyz/coding-project/controller"
 	"github.com/harbor-xyz/coding-project/database"
 	"github.com/harbor-xyz/coding-project/repository"
@@ -25,9 +19,14 @@ func Init() *chi.Mux {
 	r.Mount("/swagger", httpSwagger.WrapHandler)
 
 	db := database.Get()
-	userController := controller.NewUser(service.NewUser(repository.NewUser(db), repository.NewUserAvailability(db)))
-	eventController := controller.NewEvent(service.NewEvent(repository.NewEvent(db), repository.NewSlot(db)))
-	slotController := controller.NewSlot(service.NewSlot(repository.NewSlot(db), repository.NewUserAvailability(db)))
+	userRepository := repository.NewUser(db)
+	userAvailabilityRepository := repository.NewUserAvailability(db)
+	eventRepository := repository.NewEvent(db)
+	slotRepository := repository.NewSlot(db)
+
+	userController := controller.NewUser(service.NewUser(userRepository, userAvailabilityRepository))
+	eventController := controller.NewEvent(service.NewEvent(eventRepository, slotRepository))
+	slotController := controller.NewSlot(service.NewSlot(slotRepository, userAvailabilityRepository))
 
 	r.Route("/users", func(r chi.Router) {
 		r.Post("/", userController.Create)
@@ -49,20 +48,4 @@ func Init() *chi.Mux {
 	})
 
 	return r
-}
-
-func userIDContext(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := chi.URLParam(r, "userID")
-		if userID == "" {
-			render.Render(w, r, contract.ErrorRenderer(errors.New("user ID is required")))
-			return
-		}
-		id, err := strconv.Atoi(userID)
-		if err != nil {
-			render.Render(w, r, contract.ErrorRenderer(errors.New("invalid user ID")))
-		}
-		ctx := context.WithValue(r.Context(), controller.ContextUserIDKey, id)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
 }
