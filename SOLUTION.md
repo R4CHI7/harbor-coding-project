@@ -47,3 +47,9 @@ The code will compile and auto migrate the database
 (There is a possibility of a race condition happening where the code runs before the DB is ready to accept connections. If this happens, simply cancel and re-execute the command)
 
 * Once the code is up and running, visit `http://localhost:8080/swagger/index.html` to view the swagger docs and accessing the different APIs.
+
+* Run tests by running
+
+```go test ./...```
+
+from the root directory
