@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/harbor-xyz/coding-project/contract"
+
 	"github.com/stretchr/testify/suite"
 )
 

@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"github.com/harbor-xyz/coding-project/model"
-	"gorm.io/datatypes"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"gorm.io/datatypes"
 )
 
 type SlotTestSuite struct {
