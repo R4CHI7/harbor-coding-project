@@ -15,16 +15,19 @@ type EventTestSuite struct {
 	suite.Suite
 	service             Event
 	mockEventRepository *MockEventRepository
+	mockSlotRepository  *MockSlotRepository
 	ctx                 context.Context
 }
 
 func (suite *EventTestSuite) SetupTest() {
 	suite.mockEventRepository = &MockEventRepository{}
-	suite.service = NewEvent(suite.mockEventRepository)
+	suite.mockSlotRepository = &MockSlotRepository{}
+	suite.service = NewEvent(suite.mockEventRepository, suite.mockSlotRepository)
 	suite.ctx = context.Background()
 }
 
 func (suite *EventTestSuite) TestCreateHappyFlow() {
+	now := time.Now()
 	input := contract.Event{
 		SlotID:       1,
 		InviteeName:  "test",
@@ -36,10 +39,20 @@ func (suite *EventTestSuite) TestCreateHappyFlow() {
 		SlotID:       1,
 		InviteeName:  "test",
 		InviteeEmail: "test@example.xyz",
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+		StartTime:    now,
+		EndTime:      now.Add(30 * time.Minute),
+		CreatedAt:    now,
+		UpdatedAt:    now,
 	}
-	suite.mockEventRepository.On("Create", suite.ctx, model.Event{UserID: 1, SlotID: 1, InviteeName: "test", InviteeEmail: "test@example.xyz"}).Return(expectedResp, nil)
+	suite.mockSlotRepository.On("GetByID", suite.ctx, 1).Return(model.Slot{
+		ID:        1,
+		UserID:    1,
+		StartTime: now,
+		EndTime:   now.Add(30 * time.Minute),
+		Status:    model.StatusCreated,
+	}, nil)
+	suite.mockEventRepository.On("Create", suite.ctx, model.Event{UserID: 1, SlotID: 1, InviteeName: "test", InviteeEmail: "test@example.xyz", StartTime: now, EndTime: now.Add(30 * time.Minute)}).
+		Return(expectedResp, nil)
 
 	resp, err := suite.service.Create(suite.ctx, 1, input)
 	suite.Nil(err)
@@ -50,12 +63,20 @@ func (suite *EventTestSuite) TestCreateHappyFlow() {
 }
 
 func (suite *EventTestSuite) TestCreateShouldReturnErrorIfRepositoryReturnsError() {
+	now := time.Now()
 	input := contract.Event{
 		SlotID:       1,
 		InviteeName:  "test",
 		InviteeEmail: "test@example.xyz",
 	}
-	suite.mockEventRepository.On("Create", suite.ctx, model.Event{UserID: 1, SlotID: 1, InviteeName: "test", InviteeEmail: "test@example.xyz"}).
+	suite.mockSlotRepository.On("GetByID", suite.ctx, 1).Return(model.Slot{
+		ID:        1,
+		UserID:    1,
+		StartTime: now,
+		EndTime:   now.Add(30 * time.Minute),
+		Status:    model.StatusCreated,
+	}, nil)
+	suite.mockEventRepository.On("Create", suite.ctx, model.Event{UserID: 1, SlotID: 1, InviteeName: "test", InviteeEmail: "test@example.xyz", StartTime: now, EndTime: now.Add(30 * time.Minute)}).
 		Return(model.Event{}, errors.New("some error"))
 
 	resp, err := suite.service.Create(suite.ctx, 1, input)

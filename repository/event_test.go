@@ -39,9 +39,9 @@ func (suite *EventTestSuite) SetupTest() {
 
 func (suite *EventTestSuite) TestCreateHappyFlow() {
 	suite.mock.ExpectBegin()
-	suite.mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "events" ("user_id","slot_id","invitee_email","invitee_name","invitee_notes","created_at","updated_at","deleted_at") 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id"`)).
-		WithArgs(1, 1, "test@example.xyz", "test", "test", sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+	suite.mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "events" ("user_id","slot_id","invitee_email","invitee_name","invitee_notes","start_time","end_time","created_at","updated_at","deleted_at")
+	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING "id"`)).
+		WithArgs(1, 1, "test@example.xyz", "test", "test", sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 		WillReturnRows(
 			sqlmock.NewRows([]string{"id"}).AddRow(1))
 	suite.mock.ExpectCommit()
@@ -55,9 +55,9 @@ func (suite *EventTestSuite) TestCreateHappyFlow() {
 
 func (suite *EventTestSuite) TestCreateReturnsErrorWhenDBFails() {
 	suite.mock.ExpectBegin()
-	suite.mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "events" ("user_id","slot_id","invitee_email","invitee_name","invitee_notes","created_at","updated_at","deleted_at") 
-	VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "id"`)).
-		WithArgs(1, 1, "test@example.xyz", "test", "test", sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+	suite.mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "events" ("user_id","slot_id","invitee_email","invitee_name","invitee_notes","start_time","end_time","created_at","updated_at","deleted_at")
+	VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING "id"`)).
+		WithArgs(1, 1, "test@example.xyz", "test", "test", sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
 		WillReturnError(errors.New("some error"))
 	suite.mock.ExpectRollback()
 
@@ -69,11 +69,12 @@ func (suite *EventTestSuite) TestCreateReturnsErrorWhenDBFails() {
 }
 
 func (suite *EventTestSuite) TestGetReturnsDataIfExists() {
+	now := time.Now()
 	suite.mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "events" WHERE user_id = $1`)).
 		WithArgs(1).WillReturnRows(sqlmock.NewRows(
-		[]string{"id", "user_id", "slot_id", "invitee_email", "invitee_name", "invitee_notes", "created_at", "updated_at", "deleted_at"},
-	).AddRow(1, 1, 1, "test@example.xyz", "test", "test", time.Now(), time.Now(), time.Now()).
-		AddRow(2, 1, 2, "test1@example.xyz", "test", "test", time.Now(), time.Now(), time.Now()))
+		[]string{"id", "user_id", "slot_id", "invitee_email", "invitee_name", "invitee_notes", "start_time", "end_time", "created_at", "updated_at", "deleted_at"},
+	).AddRow(1, 1, 1, "test@example.xyz", "test", "test", now, now, now, now, now).
+		AddRow(2, 1, 2, "test1@example.xyz", "test", "test", now, now, now, now, now))
 
 	resp, err := suite.repo.Get(context.Background(), 1)
 	suite.NoError(err)

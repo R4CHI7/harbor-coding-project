@@ -24,7 +24,7 @@ func Init() *chi.Mux {
 
 	db := database.Get()
 	userController := controller.NewUser(service.NewUser(repository.NewUser(db), repository.NewUserAvailability(db)))
-	eventController := controller.NewEvent(service.NewEvent(repository.NewEvent(db)))
+	eventController := controller.NewEvent(service.NewEvent(repository.NewEvent(db), repository.NewSlot(db)))
 	slotController := controller.NewSlot(service.NewSlot(repository.NewSlot(db), repository.NewUserAvailability(db)))
 
 	r.Route("/users", func(r chi.Router) {

@@ -58,3 +58,8 @@ func (mock *MockSlotRepository) Get(ctx context.Context, userID int, startTimeTh
 	args := mock.Called(ctx, userID, startTimeThreshold, endTimeThreshold)
 	return args.Get(0).([]model.Slot), args.Error(1)
 }
+
+func (mock *MockSlotRepository) GetByID(ctx context.Context, slotID int) (model.Slot, error) {
+	args := mock.Called(ctx, slotID)
+	return args.Get(0).(model.Slot), args.Error(1)
+}

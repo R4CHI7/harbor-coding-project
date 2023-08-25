@@ -19,6 +19,7 @@ type UserAvailabilityRepository interface {
 type SlotRepository interface {
 	Create(context.Context, []model.Slot) error
 	Get(context.Context, int, time.Time, time.Time) ([]model.Slot, error)
+	GetByID(context.Context, int) (model.Slot, error)
 }
 
 type EventRepository interface {

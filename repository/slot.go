@@ -31,6 +31,16 @@ func (slot Slot) Create(ctx context.Context, slots []model.Slot) error {
 	return err
 }
 
+func (slot Slot) GetByID(ctx context.Context, slotID int) (model.Slot, error) {
+	slotObj := model.Slot{ID: uint(slotID)}
+	err := slot.db.Find(&slotObj).Error
+	if err != nil {
+		log.Printf("error occurred while fetching slot from db: %s", err.Error())
+		return model.Slot{}, err
+	}
+	return slotObj, nil
+}
+
 func NewSlot(db *gorm.DB) Slot {
 	return Slot{db: db}
 }

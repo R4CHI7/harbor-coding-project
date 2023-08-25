@@ -122,6 +122,30 @@ func (suite *SlotTestSuite) TestGetReturnsErrorIfDBReturnsError() {
 	suite.Nil(resp)
 }
 
+func (suite *SlotTestSuite) TestGetByIDReturnsDataIfExists() {
+	now := time.Now()
+	suite.mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "slots" WHERE "slots"."id" = $1`)).
+		WithArgs(1).
+		WillReturnRows(sqlmock.NewRows(
+			[]string{"id", "user_id", "start_time", "end_time", "status", "created_at", "updated_at", "deleted_at"},
+		).AddRow(1, 1, now, now.Add(30*time.Minute), 0, now, now, now))
+
+	resp, err := suite.repo.GetByID(context.Background(), 1)
+	suite.NoError(err)
+	suite.Equal(1, int(resp.ID))
+	suite.Equal(now, resp.StartTime)
+}
+
+func (suite *SlotTestSuite) TestGetByIDReturnsErrorIfDBReturnsError() {
+	suite.mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "slots" WHERE "slots"."id" = $1`)).
+		WithArgs(1).
+		WillReturnError(errors.New("some error"))
+
+	resp, err := suite.repo.GetByID(context.Background(), 1)
+	suite.Equal("some error", err.Error())
+	suite.Empty(resp)
+}
+
 func TestSlotTestSuite(t *testing.T) {
 	suite.Run(t, new(SlotTestSuite))
 }

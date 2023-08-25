@@ -9,18 +9,25 @@ import (
 
 type Event struct {
 	eventRepository EventRepository
+	slotRepository  SlotRepository
 }
 
 func (event Event) Create(ctx context.Context, userID int, input contract.Event) (contract.EventResponse, error) {
+	slot, err := event.slotRepository.GetByID(ctx, input.SlotID)
+	if err != nil {
+		return contract.EventResponse{}, err
+	}
 	eventObj := model.Event{
 		UserID:       uint(userID),
 		SlotID:       uint(input.SlotID),
 		InviteeEmail: input.InviteeEmail,
 		InviteeName:  input.InviteeName,
 		InviteeNotes: input.InviteeNotes,
+		StartTime:    slot.StartTime,
+		EndTime:      slot.EndTime,
 	}
 
-	eventObj, err := event.eventRepository.Create(ctx, eventObj)
+	eventObj, err = event.eventRepository.Create(ctx, eventObj)
 	if err != nil {
 		return contract.EventResponse{}, err
 	}
@@ -36,6 +43,6 @@ func (event Event) Create(ctx context.Context, userID int, input contract.Event)
 	}, nil
 }
 
-func NewEvent(eventRepository EventRepository) Event {
-	return Event{eventRepository: eventRepository}
+func NewEvent(eventRepository EventRepository, slotRepository SlotRepository) Event {
+	return Event{eventRepository: eventRepository, slotRepository: slotRepository}
 }
