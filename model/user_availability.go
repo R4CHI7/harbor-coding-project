@@ -6,18 +6,6 @@ import (
 	"gorm.io/datatypes"
 )
 
-type Day string
-
-const (
-	Monday    Day = "monday"
-	Tuesday   Day = "tuesday"
-	Wednesday Day = "wednesday"
-	Thursday  Day = "thursday"
-	Friday    Day = "friday"
-	Saturday  Day = "saturday"
-	Sunday    Day = "sunday"
-)
-
 type Availability struct {
 	StartTime datatypes.Time
 	EndTime   datatypes.Time

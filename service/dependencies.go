@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/harbor-xyz/coding-project/model"
 )
@@ -15,6 +16,12 @@ type UserAvailabilityRepository interface {
 	Get(context.Context, int) (model.UserAvailability, error)
 }
 
+type SlotRepository interface {
+	Create(context.Context, []model.Slot) error
+	Get(context.Context, int, time.Time, time.Time) ([]model.Slot, error)
+}
+
 type EventRepository interface {
 	Create(context.Context, model.Event) (model.Event, error)
+	// Get(context.Context, int) ([]model.Event, error)
 }

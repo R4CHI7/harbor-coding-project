@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/harbor-xyz/coding-project/model"
 	"github.com/stretchr/testify/mock"
@@ -37,4 +38,23 @@ type MockEventRepository struct {
 func (mock *MockEventRepository) Create(ctx context.Context, event model.Event) (model.Event, error) {
 	args := mock.Called(ctx, event)
 	return args.Get(0).(model.Event), args.Error(1)
+}
+
+// func (mock *MockEventRepository) Get(ctx context.Context, userID int) ([]model.Event, error) {
+// 	args := mock.Called(ctx, userID)
+// 	return args.Get(0).([]model.Event), args.Error(1)
+// }
+
+type MockSlotRepository struct {
+	mock.Mock
+}
+
+func (mock *MockSlotRepository) Create(ctx context.Context, slots []model.Slot) error {
+	args := mock.Called(ctx, slots)
+	return args.Error(0)
+}
+
+func (mock *MockSlotRepository) Get(ctx context.Context, userID int, startTimeThreshold, endTimeThreshold time.Time) ([]model.Slot, error) {
+	args := mock.Called(ctx, userID, startTimeThreshold, endTimeThreshold)
+	return args.Get(0).([]model.Slot), args.Error(1)
 }
