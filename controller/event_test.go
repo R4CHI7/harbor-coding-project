@@ -67,12 +67,12 @@ func (suite *EventTestSuite) TestCreateShouldReturnErrorWhenServiceReturnsError(
 	suite.mockEventService.AssertExpectations(suite.T())
 }
 
-func (suite *EventTestSuite) TestGetHappyPath() {
+func (suite *EventTestSuite) TestGetAllHappyPath() {
 	now := time.Now()
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/users/1/events", nil)
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
-	suite.mockEventService.On("Get", req.Context(), 1).Return(contract.EventListResponse{
+	suite.mockEventService.On("GetAll", req.Context(), 1).Return(contract.EventListResponse{
 		Events: []contract.EventResponse{
 			{
 				ID:           1,
@@ -87,7 +87,7 @@ func (suite *EventTestSuite) TestGetHappyPath() {
 		},
 	}, nil)
 
-	suite.controller.Get(w, req)
+	suite.controller.GetAll(w, req)
 
 	res := w.Result()
 	defer res.Body.Close()
@@ -101,14 +101,14 @@ func (suite *EventTestSuite) TestGetHappyPath() {
 	suite.mockEventService.AssertExpectations(suite.T())
 }
 
-func (suite *EventTestSuite) TestGetAvailabilityReturnsServerErrorWhenServiceReturnsError() {
+func (suite *EventTestSuite) TestGetAllReturnsServerErrorWhenServiceReturnsError() {
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/users/1/events", nil)
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")
-	suite.mockEventService.On("Get", req.Context(), 1).Return(contract.EventListResponse{}, errors.New("some error"))
+	suite.mockEventService.On("GetAll", req.Context(), 1).Return(contract.EventListResponse{}, errors.New("some error"))
 
-	suite.controller.Get(w, req)
+	suite.controller.GetAll(w, req)
 
 	res := w.Result()
 	defer res.Body.Close()

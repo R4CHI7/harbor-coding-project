@@ -40,7 +40,7 @@ func (mock *MockEventRepository) Create(ctx context.Context, event model.Event) 
 	return args.Get(0).(model.Event), args.Error(1)
 }
 
-func (mock *MockEventRepository) Get(ctx context.Context, userID int) ([]model.Event, error) {
+func (mock *MockEventRepository) GetAll(ctx context.Context, userID int) ([]model.Event, error) {
 	args := mock.Called(ctx, userID)
 	return args.Get(0).([]model.Event), args.Error(1)
 }

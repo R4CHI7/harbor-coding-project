@@ -84,9 +84,9 @@ func (suite *EventTestSuite) TestCreateShouldReturnErrorIfRepositoryReturnsError
 	suite.Empty(resp)
 }
 
-func (suite *EventTestSuite) TestGetHappyFlow() {
+func (suite *EventTestSuite) TestGetAllHappyFlow() {
 	now := time.Now()
-	suite.mockEventRepository.On("Get", suite.ctx, 1).Return([]model.Event{
+	suite.mockEventRepository.On("GetAll", suite.ctx, 1).Return([]model.Event{
 		{
 			ID:           1,
 			UserID:       1,
@@ -109,15 +109,15 @@ func (suite *EventTestSuite) TestGetHappyFlow() {
 		},
 	}, nil)
 
-	resp, err := suite.service.Get(suite.ctx, 1)
+	resp, err := suite.service.GetAll(suite.ctx, 1)
 	suite.NoError(err)
 	suite.Equal(2, len(resp.Events))
 }
 
-func (suite *EventTestSuite) TestGetReturnsErrorIfRepositoryReturnsError() {
-	suite.mockEventRepository.On("Get", suite.ctx, 1).Return([]model.Event{}, errors.New("some error"))
+func (suite *EventTestSuite) TestGetAllReturnsErrorIfRepositoryReturnsError() {
+	suite.mockEventRepository.On("GetAll", suite.ctx, 1).Return([]model.Event{}, errors.New("some error"))
 
-	resp, err := suite.service.Get(suite.ctx, 1)
+	resp, err := suite.service.GetAll(suite.ctx, 1)
 	suite.Equal("some error", err.Error())
 	suite.Empty(resp)
 }

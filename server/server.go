@@ -35,7 +35,7 @@ func Init() *chi.Mux {
 			r.Get("/availability", userController.GetAvailability)
 			r.Get("/availability_overlap", userController.GetAvailabilityOverlap)
 			r.Post("/events", eventController.Create)
-			r.Get("/events", eventController.Get)
+			r.Get("/events", eventController.GetAll)
 			r.Post("/slots", slotController.Create)
 		})
 	})

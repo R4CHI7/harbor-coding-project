@@ -34,11 +34,11 @@ func (event Event) Create(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, resp)
 }
 
-func (event Event) Get(w http.ResponseWriter, r *http.Request) {
+func (event Event) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID := ctx.Value(ContextUserIDKey).(int)
 
-	resp, err := event.eventService.Get(ctx, userID)
+	resp, err := event.eventService.GetAll(ctx, userID)
 	if err != nil {
 		render.Render(w, r, contract.ServerErrorRenderer(err))
 		return

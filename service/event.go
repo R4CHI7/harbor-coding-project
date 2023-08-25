@@ -45,8 +45,8 @@ func (event Event) Create(ctx context.Context, userID int, input contract.Event)
 	}, nil
 }
 
-func (event Event) Get(ctx context.Context, userID int) (contract.EventListResponse, error) {
-	events, err := event.eventRepository.Get(ctx, userID)
+func (event Event) GetAll(ctx context.Context, userID int) (contract.EventListResponse, error) {
+	events, err := event.eventRepository.GetAll(ctx, userID)
 	if err != nil {
 		return contract.EventListResponse{}, err
 	}
