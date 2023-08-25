@@ -5,7 +5,7 @@ import "time"
 type Event struct {
 	ID           uint `gorm:"primaryKey"`
 	UserID       uint
-	SlotID       uint
+	SlotID       uint   `gorm:"uniqueIndex"`
 	InviteeEmail string `gorm:"not null"`
 	InviteeName  string `gorm:"not null"`
 	InviteeNotes string

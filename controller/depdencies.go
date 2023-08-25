@@ -16,6 +16,7 @@ type UserService interface {
 
 type EventService interface {
 	Create(context.Context, int, contract.Event) (contract.EventResponse, error)
+	Get(context.Context, int) (contract.EventListResponse, error)
 }
 
 type SlotService interface {

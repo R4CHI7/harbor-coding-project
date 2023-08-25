@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/harbor-xyz/coding-project/contract"
 	"github.com/stretchr/testify/suite"
@@ -25,7 +26,7 @@ func (suite *EventTestSuite) SetupTest() {
 }
 
 func (suite *EventTestSuite) TestCreateHappyFlow() {
-	req := httptest.NewRequest(http.MethodPost, "/users/1/event",
+	req := httptest.NewRequest(http.MethodPost, "/users/1/events",
 		strings.NewReader(`{"slot_id":1,"invitee_email":"test@example.xyz","invitee_name":"test","invitee_notes":"test"}`))
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")
@@ -42,8 +43,8 @@ func (suite *EventTestSuite) TestCreateHappyFlow() {
 	suite.mockEventService.AssertExpectations(suite.T())
 }
 
-func (suite *EventTestSuite) TestCreatShouldReturnErrorWhenServiceReturnsError() {
-	req := httptest.NewRequest(http.MethodPost, "/users/1/event",
+func (suite *EventTestSuite) TestCreateShouldReturnErrorWhenServiceReturnsError() {
+	req := httptest.NewRequest(http.MethodPost, "/users/1/events",
 		strings.NewReader(`{"slot_id":1,"invitee_email":"test@example.xyz","invitee_name":"test","invitee_notes":"test"}`))
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")
@@ -64,6 +65,61 @@ func (suite *EventTestSuite) TestCreatShouldReturnErrorWhenServiceReturnsError()
 	suite.Equal(`{"status_text":"internal server error","message":"some error"}
 `, string(body)) // This newline is needed because chi returns the response ending with a \n
 	suite.mockEventService.AssertExpectations(suite.T())
+}
+
+func (suite *EventTestSuite) TestGetHappyPath() {
+	now := time.Now()
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/events", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	suite.mockEventService.On("Get", req.Context(), 1).Return(contract.EventListResponse{
+		Events: []contract.EventResponse{
+			{
+				ID:           1,
+				UserID:       1,
+				SlotID:       1,
+				InviteeEmail: "test@example.xyz",
+				InviteeName:  "test",
+				StartTime:    now,
+				EndTime:      now.Add(30 * time.Minute),
+				CreatedAt:    now,
+			},
+		},
+	}, nil)
+
+	suite.controller.Get(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusOK, w.Result().StatusCode)
+	suite.NotEmpty(body)
+	suite.mockEventService.AssertExpectations(suite.T())
+}
+
+func (suite *EventTestSuite) TestGetAvailabilityReturnsServerErrorWhenServiceReturnsError() {
+	w := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/users/1/events", nil)
+	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
+	req.Header.Add("Content-Type", "application/json")
+	suite.mockEventService.On("Get", req.Context(), 1).Return(contract.EventListResponse{}, errors.New("some error"))
+
+	suite.controller.Get(w, req)
+
+	res := w.Result()
+	defer res.Body.Close()
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		suite.Error(errors.New("expected error to be nil got"), err)
+	}
+
+	suite.Equal(http.StatusInternalServerError, w.Result().StatusCode)
+	suite.Equal(`{"status_text":"internal server error","message":"some error"}
+`, string(body))
 }
 
 func TestEventTestSuite(t *testing.T) {

@@ -41,6 +41,11 @@ func (mock *MockEventService) Create(ctx context.Context, userID int, input cont
 	return args.Get(0).(contract.EventResponse), args.Error(1)
 }
 
+func (mock *MockEventService) Get(ctx context.Context, userID int) (contract.EventListResponse, error) {
+	args := mock.Called(ctx, userID)
+	return args.Get(0).(contract.EventListResponse), args.Error(1)
+}
+
 type MockSlotService struct {
 	mock.Mock
 }
