@@ -32,6 +32,11 @@ func (event Event) Create(ctx context.Context, userID int, input contract.Event)
 		return contract.EventResponse{}, err
 	}
 
+	err = event.slotRepository.BookSlot(ctx, input.SlotID)
+	if err != nil {
+		return contract.EventResponse{}, err
+	}
+
 	return contract.EventResponse{
 		ID:           int(eventObj.ID),
 		UserID:       int(eventObj.UserID),

@@ -21,6 +21,7 @@ type SlotRepository interface {
 	Get(context.Context, int, time.Time, time.Time) ([]model.Slot, error)
 	GetByID(context.Context, int) (model.Slot, error)
 	DeleteByID(context.Context, int) error
+	BookSlot(context.Context, int) error
 }
 
 type EventRepository interface {
