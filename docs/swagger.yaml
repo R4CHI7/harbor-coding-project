@@ -1,0 +1,240 @@
+basePath: /
+definitions:
+  contract.Event:
+    properties:
+      invitee_email:
+        type: string
+      invitee_name:
+        type: string
+      invitee_notes:
+        type: string
+      slot_id:
+        type: integer
+    type: object
+  contract.EventListResponse:
+    properties:
+      events:
+        items:
+          $ref: '#/definitions/contract.EventResponse'
+        type: array
+    type: object
+  contract.EventResponse:
+    properties:
+      created_at:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: integer
+      invitee_email:
+        type: string
+      invitee_name:
+        type: string
+      invitee_notes:
+        type: string
+      slot_id:
+        type: integer
+      start_time:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  contract.User:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+    type: object
+  contract.UserAvailability:
+    properties:
+      availability:
+        items:
+          $ref: '#/definitions/model.DayAvailability'
+        type: array
+      meeting_duration_mins:
+        type: integer
+    type: object
+  model.Day:
+    enum:
+    - monday
+    - tuesday
+    - wednesday
+    - thursday
+    - friday
+    - saturday
+    - sunday
+    type: string
+    x-enum-varnames:
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+    - Sunday
+  model.DayAvailability:
+    properties:
+      day:
+        $ref: '#/definitions/model.Day'
+      end_time:
+        type: string
+      start_time:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Calendly Backend APIs
+  title: calendly Backend APIs
+  version: "1.0"
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add user
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/contract.User'
+      produces:
+      - application/json
+      responses: {}
+      summary: This API creates a new user
+      tags:
+      - user
+  /users/{user_id}/availability:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/contract.UserAvailability'
+      summary: This API returns a user's availability
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add user
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/contract.UserAvailability'
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: This API creates or updates a user's availability
+      tags:
+      - user
+  /users/{user_id}/availability_overlap:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: second user id
+        in: query
+        name: second_user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/contract.UserAvailability'
+      summary: This API returns a user's availability overlap with another user
+      tags:
+      - user
+  /users/{user_id}/events:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/contract.EventListResponse'
+      summary: This API returns all events for a given user ID.
+      tags:
+      - event
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Add event
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/contract.Event'
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/contract.EventResponse'
+      summary: This API creates a new event for the user with invitee details.
+      tags:
+      - event
+  /users/{user_id}/slots:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: number of days to create slots
+        in: query
+        name: num_days
+        required: true
+        type: integer
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: This API creates slots for a user for given number of days.
+      tags:
+      - slot
+swagger: "2.0"

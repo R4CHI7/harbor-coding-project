@@ -284,7 +284,7 @@ func (suite *UserTestSuite) TestGetAvailabilityReturnsNotFoundErrorWhenAvailabil
 
 func (suite *UserTestSuite) TestGetAvailabilityOverlapHappyPath() {
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?user_id=2", nil)
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?second_user_id=2", nil)
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")
 	suite.mockService.On("GetAvailabilityOverlap", req.Context(), 1, 2).Return(contract.UserAvailabilityOverlap{
@@ -318,7 +318,7 @@ func (suite *UserTestSuite) TestGetAvailabilityOverlapHappyPath() {
 
 func (suite *UserTestSuite) TestGetAvailabilityOverlapReturnsNullResponseWhenNoOverlapExists() {
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?user_id=2", nil)
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?second_user_id=2", nil)
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")
 	suite.mockService.On("GetAvailabilityOverlap", req.Context(), 1, 2).Return(contract.UserAvailabilityOverlap{}, nil)
@@ -339,7 +339,7 @@ func (suite *UserTestSuite) TestGetAvailabilityOverlapReturnsNullResponseWhenNoO
 
 func (suite *UserTestSuite) TestGetAvailabilityOverlapReturnsErrorWhenServiceReturnsError() {
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?user_id=2", nil)
+	req := httptest.NewRequest(http.MethodGet, "/users/1/availability_overlap?second_user_id=2", nil)
 	req = req.WithContext(context.WithValue(context.Background(), ContextUserIDKey, 1))
 	req.Header.Add("Content-Type", "application/json")
 	suite.mockService.On("GetAvailabilityOverlap", req.Context(), 1, 2).Return(contract.UserAvailabilityOverlap{}, errors.New("some error"))

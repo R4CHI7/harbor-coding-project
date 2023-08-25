@@ -1,0 +1,360 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Calendly Backend APIs",
+        "title": "calendly Backend APIs",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/",
+    "paths": {
+        "/users": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "This API creates a new user",
+                "parameters": [
+                    {
+                        "description": "Add user",
+                        "name": "event",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/contract.User"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/users/{user_id}/availability": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "This API returns a user's availability",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/contract.UserAvailability"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "This API creates or updates a user's availability",
+                "parameters": [
+                    {
+                        "description": "Add user",
+                        "name": "event",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/contract.UserAvailability"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/users/{user_id}/availability_overlap": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "This API returns a user's availability overlap with another user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "second user id",
+                        "name": "second_user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/contract.UserAvailability"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/events": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "event"
+                ],
+                "summary": "This API returns all events for a given user ID.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/contract.EventListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "event"
+                ],
+                "summary": "This API creates a new event for the user with invitee details.",
+                "parameters": [
+                    {
+                        "description": "Add event",
+                        "name": "event",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/contract.Event"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/contract.EventResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/slots": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slot"
+                ],
+                "summary": "This API creates slots for a user for given number of days.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "number of days to create slots",
+                        "name": "num_days",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "contract.Event": {
+            "type": "object",
+            "properties": {
+                "invitee_email": {
+                    "type": "string"
+                },
+                "invitee_name": {
+                    "type": "string"
+                },
+                "invitee_notes": {
+                    "type": "string"
+                },
+                "slot_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "contract.EventListResponse": {
+            "type": "object",
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/contract.EventResponse"
+                    }
+                }
+            }
+        },
+        "contract.EventResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "invitee_email": {
+                    "type": "string"
+                },
+                "invitee_name": {
+                    "type": "string"
+                },
+                "invitee_notes": {
+                    "type": "string"
+                },
+                "slot_id": {
+                    "type": "integer"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "contract.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "contract.UserAvailability": {
+            "type": "object",
+            "properties": {
+                "availability": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DayAvailability"
+                    }
+                },
+                "meeting_duration_mins": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Day": {
+            "type": "string",
+            "enum": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+            ],
+            "x-enum-varnames": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+            ]
+        },
+        "model.DayAvailability": {
+            "type": "object",
+            "properties": {
+                "day": {
+                    "$ref": "#/definitions/model.Day"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

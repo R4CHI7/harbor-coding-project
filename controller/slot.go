@@ -13,6 +13,14 @@ type Slot struct {
 	slotService SlotService
 }
 
+// Create - Creates slots for a user
+// @Summary This API creates slots for a user for given number of days.
+// @Tags slot
+// @Accept  json
+// @Produce  json
+// @Param num_days query int true "number of days to create slots"
+// @Param user_id path int true "user id"
+// @Router /users/{user_id}/slots [post]
 func (slot Slot) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID := ctx.Value(ContextUserIDKey).(int)

@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/harbor-xyz/coding-project/contract"
 	"github.com/harbor-xyz/coding-project/controller"
@@ -21,6 +22,7 @@ func Init() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 	r.Use(middleware.Logger)
+	r.Mount("/swagger", httpSwagger.WrapHandler)
 
 	db := database.Get()
 	userController := controller.NewUser(service.NewUser(repository.NewUser(db), repository.NewUserAvailability(db)))
