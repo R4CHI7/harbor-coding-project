@@ -54,3 +54,8 @@ func (mock *MockSlotService) Create(ctx context.Context, userID, numDays int) (i
 	args := mock.Called(ctx, userID, numDays)
 	return args.Int(0), args.Error(1)
 }
+
+func (mock *MockSlotService) GetAll(ctx context.Context, userID int) (contract.SlotList, error) {
+	args := mock.Called(ctx, userID)
+	return args.Get(0).(contract.SlotList), args.Error(1)
+}

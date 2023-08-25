@@ -212,6 +212,35 @@ const docTemplate = `{
             }
         },
         "/users/{user_id}/slots": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "slot"
+                ],
+                "summary": "This API returns slots for a user starting today till 14 days.",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/contract.SlotList"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -301,6 +330,37 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "contract.Slot": {
+            "type": "object",
+            "properties": {
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "contract.SlotList": {
+            "type": "object",
+            "properties": {
+                "slots": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/contract.Slot"
+                    }
                 }
             }
         },

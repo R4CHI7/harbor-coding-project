@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/harbor-xyz/coding-project/contract"
 	"github.com/harbor-xyz/coding-project/model"
 )
 
@@ -63,6 +64,29 @@ func (slot Slot) Create(ctx context.Context, userID, numDays int) (int, error) {
 		return -1, nil
 	}
 	return len(slots), nil
+}
+
+func (slot Slot) GetAll(ctx context.Context, userID int) (contract.SlotList, error) {
+	slots, err := slot.slotRepository.Get(ctx, userID, time.Now(), time.Now().AddDate(0, 0, 14))
+	if err != nil {
+		return contract.SlotList{}, err
+	}
+
+	resp := make([]contract.Slot, 0)
+	for _, s := range slots {
+		if s.EndTime.Before(time.Now()) {
+			s.Status = model.StatusExpired
+		}
+		resp = append(resp, contract.Slot{
+			ID:        int(s.ID),
+			UserID:    s.UserID,
+			StartTime: s.StartTime,
+			EndTime:   s.EndTime,
+			Status:    s.Status.String(),
+		})
+	}
+
+	return contract.SlotList{Slots: resp}, nil
 }
 
 func NewSlot(slotRepository SlotRepository, availabilityRepository UserAvailabilityRepository) Slot {

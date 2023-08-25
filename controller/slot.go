@@ -46,6 +46,27 @@ func (slot Slot) Create(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, map[string]int{"num_slots": numSlots})
 }
 
+// GetAll - Gets slots for a user
+// @Summary This API returns slots for a user starting today till 14 days.
+// @Tags slot
+// @Accept  json
+// @Produce  json
+// @Param user_id path int true "user id"
+// @Success 200 {object} contract.SlotList
+// @Router /users/{user_id}/slots [get]
+func (slot Slot) GetAll(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID := ctx.Value(ContextUserIDKey).(int)
+
+	slots, err := slot.slotService.GetAll(ctx, userID)
+	if err != nil {
+		render.Render(w, r, contract.ServerErrorRenderer(err))
+		return
+	}
+
+	render.JSON(w, r, slots)
+}
+
 func NewSlot(slotService SlotService) Slot {
 	return Slot{slotService: slotService}
 }

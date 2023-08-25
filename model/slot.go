@@ -13,6 +13,20 @@ const (
 	StatusExpired status = 4
 )
 
+func (s status) String() string {
+	switch s {
+	case StatusCreated:
+		return "created"
+	case StatusBooked:
+		return "booked"
+	case StatusDeleted:
+		return "deleted"
+	case StatusExpired:
+		return "expired"
+	}
+	return ""
+}
+
 type Slot struct {
 	ID        uint `gorm:"primaryKey"`
 	UserID    uint
