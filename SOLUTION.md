@@ -40,16 +40,16 @@ The code can be easily run using docker-compose. Following are some steps:
 * Clone the code
 * `cd` into the directory and run
 
-```docker-compose up --build```
+  ```docker-compose up --build```
 
-The code will compile and auto migrate the database
+  The code will compile and auto migrate the database
 
-(There is a possibility of a race condition happening where the code runs before the DB is ready to accept connections. If this happens, simply cancel and re-execute the command)
+  (There is a possibility of a race condition happening where the code runs before the DB is ready to accept connections. If this happens, simply cancel and re-execute the command)
 
-* Once the code is up and running, visit `http://localhost:8080/swagger/index.html` to view the swagger docs and accessing the different APIs.
+* Once the code is up and running, visit [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html) to view the swagger docs and accessing the different APIs.
 
 * Run tests by running
 
-```go test ./...```
+  ```go test ./...```
 
-from the root directory
+  from the root directory
