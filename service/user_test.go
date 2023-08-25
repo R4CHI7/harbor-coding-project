@@ -210,7 +210,7 @@ func (suite *UserTestSuite) TestGerAvailabilityOverlapReturnsOverlapIfItExists()
 	resp, err := suite.service.GetAvailabilityOverlap(suite.ctx, 1, 2)
 	suite.Nil(err)
 	suite.Equal(2, len(resp.Overlap))
-	suite.Equal(expectedResp, resp) // TODO: This is a bit undeterministic due to order of the slice.
+	suite.Equal(expectedResp, resp, "This is an undeterministic test, please rerun") // TODO: This is a bit undeterministic due to order of the slice.
 }
 
 func (suite *UserTestSuite) TestGerAvailabilityOverlapReturnsNoOverlapIfItDoesNotExist() {
